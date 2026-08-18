@@ -39,7 +39,7 @@ export const updateService = async (
   id,
   serviceData
 ) => {
-  const response = await api.put(
+  const response = await api.patch(
     `/services/${id}`,
     serviceData,
     {

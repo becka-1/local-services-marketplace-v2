@@ -228,6 +228,12 @@ const UserProfile = () => {
     }
   };
 
+  const handleServiceUpdated = (updatedService) => {
+    setServices((prev) =>
+      prev.map((s) => (s.id === updatedService.id ? { ...s, ...updatedService } : s))
+    );
+  };
+
   if (loading) {
     return <p>Loading profile...</p>;
   }
@@ -353,6 +359,7 @@ const UserProfile = () => {
                 service={service}
                 isOwner={true}
                 onDelete={handleDeleteService}
+                onUpdate={handleServiceUpdated}
               />
             ))}
           </div>

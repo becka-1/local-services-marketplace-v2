@@ -4,12 +4,14 @@ import ServiceGallery from '../components/ServiceGallery.jsx';
 import ProfileAvatar from './ProfileAvatar.jsx';
 import RequestServiceModal from './RequestServiceModal.jsx';
 import ServiceDetailsModal from './ServiceDetailsModal.jsx';
+import EditServiceModal from './EditServiceModal.jsx';
 import "./ServiceCard.css";
 import { Link } from "react-router";
 
-const ServiceCard = ({ service, isOwner = false, onDelete }) => {
+const ServiceCard = ({ service, isOwner = false, onDelete, onUpdate }) => {
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async (e) => {
@@ -92,13 +94,16 @@ const ServiceCard = ({ service, isOwner = false, onDelete }) => {
 
             {isOwner ? (
               <div className="owner-card-actions">
-                <Link
-                  to={`/services/${service.id}/edit`}
+                <button
+                  type="button"
                   className="card-edit-btn"
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsEditModalOpen(true);
+                  }}
                 >
                   ✏️ Edit Service
-                </Link>
+                </button>
                 <button
                   type="button"
                   className="card-delete-btn"
@@ -129,6 +134,13 @@ const ServiceCard = ({ service, isOwner = false, onDelete }) => {
         isOpen={isDetailsModalOpen}
         onClose={() => setIsDetailsModalOpen(false)}
         serviceId={service.id}
+      />
+
+      <EditServiceModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        serviceId={service.id}
+        onServiceUpdated={onUpdate}
       />
 
       <RequestServiceModal
