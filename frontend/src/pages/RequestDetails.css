@@ -25,6 +25,21 @@
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
+.service-link-btn {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: inherit;
+  font-weight: inherit;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.service-link-btn:hover {
+  color: #0056b3;
+}
+
 .message-box {
   background-color: #f8f9fa;
   padding: 1.5rem;

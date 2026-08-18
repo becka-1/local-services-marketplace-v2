@@ -174,7 +174,7 @@ const EditService = () => {
 
       await updateService(id, data);
 
-      navigate(`/services/${id}`);
+      navigate('/services');
     } catch (error) {
       console.error(error);
 

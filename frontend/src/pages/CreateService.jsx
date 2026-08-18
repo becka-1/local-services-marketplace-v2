@@ -87,9 +87,7 @@ const CreateService = () => {
 
       const result = await createService(data);
 
-      navigate(
-        `/services/${result.service.id}`
-      );
+      navigate('/services');
     } catch (error) {
       console.error(error);
 

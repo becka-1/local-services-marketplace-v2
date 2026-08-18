@@ -3,11 +3,13 @@ import { motion } from 'framer-motion';
 import ServiceGallery from '../components/ServiceGallery.jsx';
 import ProfileAvatar from './ProfileAvatar.jsx';
 import RequestServiceModal from './RequestServiceModal.jsx';
+import ServiceDetailsModal from './ServiceDetailsModal.jsx';
 import "./ServiceCard.css";
 import { Link } from "react-router";
 
 const ServiceCard = ({ service }) => {
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   return (
     <>
@@ -59,12 +61,17 @@ const ServiceCard = ({ service }) => {
 
                 <span>{service.provider_name}</span>
               </Link>
-              <Link 
-                to={`/services/${service.id}`}
-                className="details-button"
-              >
-                <button>View Service Details</button>
-              </Link>
+              <div className="details-button">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsDetailsModalOpen(true);
+                  }}
+                >
+                  View Service Details
+                </button>
+              </div>
             </div>
 
             <div className="request-button">
@@ -81,6 +88,12 @@ const ServiceCard = ({ service }) => {
             
           </div>
       </motion.article>
+
+      <ServiceDetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={() => setIsDetailsModalOpen(false)}
+        serviceId={service.id}
+      />
 
       <RequestServiceModal
         isOpen={isRequestModalOpen}

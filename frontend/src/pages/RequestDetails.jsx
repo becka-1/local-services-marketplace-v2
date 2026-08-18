@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router";
 import { getRequestById, updateRequest, deleteRequest } from "../services/requestApi.js";
+import ServiceDetailsModal from "../components/ServiceDetailsModal.jsx";
 import './RequestDetails.css';
 
 const RequestDetails = () => {
@@ -14,6 +15,7 @@ const RequestDetails = () => {
   const [viewerId, setViewerId] = useState(""); // Temporary auth
   const [statusUpdate, setStatusUpdate] = useState("");
   const [updating, setUpdating] = useState(false);
+  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
 
   useEffect(() => {
     const loadRequest = async () => {
@@ -94,7 +96,16 @@ const RequestDetails = () => {
 
       <section className="details-card">
         <h1>Request Details</h1>
-        <h2>Service: <Link to={`/services/${request.service_id}`}>{request.service_title}</Link></h2>
+        <h2>
+          Service:{" "}
+          <button
+            type="button"
+            className="service-link-btn"
+            onClick={() => setIsServiceModalOpen(true)}
+          >
+            {request.service_title} 🔍
+          </button>
+        </h2>
         
         <p><strong>Status:</strong> <span className={`status-${request.status}`}>{request.status}</span></p>
         <p><strong>Date:</strong> {new Date(request.created_at).toLocaleString()}</p>
@@ -148,6 +159,12 @@ const RequestDetails = () => {
           </div>
         </section>
       )}
+
+      <ServiceDetailsModal
+        isOpen={isServiceModalOpen}
+        onClose={() => setIsServiceModalOpen(false)}
+        serviceId={request.service_id}
+      />
     </main>
   );
 };
