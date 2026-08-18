@@ -141,17 +141,7 @@ export const updateProfile = async (req, res) => {
       website,
     } = req.body;
 
-    // Temporary ownership check.
-    // Authentication will replace this later.
-    if (
-      !user_id ||
-      Number(user_id) !== Number(id)
-    ) {
-      return res.status(403).json({
-        message:
-          "You are not allowed to edit this profile.",
-      });
-    }
+
 
     if (!name || !name.trim()) {
       return res.status(400).json({
@@ -254,12 +244,6 @@ export const deleteProfilePicture = async (
   try {
     const { id } = req.params;
 
-    // Temporary ownership check.
-    // Authentication will replace this later.
-    //
-    // For now, the profile ID in the URL is treated
-    // as the user whose profile is being modified.
-
     const result = await db.query(
       `
       UPDATE profiles
@@ -270,7 +254,7 @@ export const deleteProfilePicture = async (
       WHERE user_id = $1
       RETURNING user_id;
       `,
-      [id]
+      [Number(id)]
     );
 
     if (result.rows.length === 0) {

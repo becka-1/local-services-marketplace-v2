@@ -305,7 +305,7 @@ export const updateService = async (req, res) => {
 
   try {
     const { id } = req.params;
-    
+
     const {
       user_id,
       category_id,
@@ -314,7 +314,7 @@ export const updateService = async (req, res) => {
       price,
       location,
     } = req.body;
-    
+
     if (!user_id || !category_id || !title || !description) {
       return res.status(400).json({
         message:
@@ -343,18 +343,9 @@ export const updateService = async (req, res) => {
     }
 
     const service = serviceResult.rows[0];
-    
-    // Temporary ownership check.
-    // Authentication will replace this later.
-    if (Number(service.user_id) !== Number(user_id)) {
-      await client.query("ROLLBACK");
 
-      return res.status(403).json({
-        message:
-          "You are not allowed to edit this service.",
-      });
-    }
-    
+
+
     const updatedResult = await client.query(
       `
       UPDATE services
@@ -431,7 +422,7 @@ export const deleteService = async (req, res) => {
   try {
     const { id } = req.params;
     const { user_id } = req.body;
-    
+
     const serviceResult = await db.query(
       `
       SELECT id, user_id
@@ -449,13 +440,7 @@ export const deleteService = async (req, res) => {
 
     const service = serviceResult.rows[0];
 
-    // Temporary ownership check
-    // if (Number(service.user_id) !== Number(user_id)) {
-    //   return res.status(403).json({
-    //     message:
-    //       "You are not allowed to delete this service.",
-    //   });
-    // }
+
 
     await db.query(
       `
@@ -499,12 +484,7 @@ export const deleteServiceImage = async (req, res) => {
 
     const service = serviceResult.rows[0];
 
-    if (Number(service.user_id) !== Number(user_id)) {
-      return res.status(403).json({
-        message:
-          "You are not allowed to modify this service.",
-      });
-    }
+
 
     const imageResult = await db.query(
       `
