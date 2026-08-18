@@ -228,12 +228,27 @@ const UserProfile = () => {
 
   return (
     <main className="user-profile-page">
-      <section className="profile-header">
-        <Link
-          to={`/users/${profile.user_id}/edit`}
-        >
-          Edit Profile
+      <div className="profile-top-nav">
+        <Link to="/services" className="back-link">
+          ← Back to services
         </Link>
+        <div className="profile-actions">
+          <Link
+            to={`/users/${profile.user_id}/requests`}
+            className="profile-btn btn-requests"
+          >
+            📋 Service Requests
+          </Link>
+          <Link
+            to={`/users/${profile.user_id}/edit`}
+            className="profile-btn btn-edit"
+          >
+            ✏️ Edit Profile
+          </Link>
+        </div>
+      </div>
+
+      <section className="profile-header">
         <ProfileAvatar
           userId={profile.user_id}
           name={profile.name}

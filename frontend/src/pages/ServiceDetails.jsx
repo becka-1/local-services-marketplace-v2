@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router";
 import { getServiceById } from "../services/serviceApi.js";
 import ServiceGallery from '../components/ServiceGallery.jsx';
+import RequestServiceModal from '../components/RequestServiceModal.jsx';
 import {
   deleteService,
 } from "../services/serviceApi.js";
@@ -15,6 +16,7 @@ const ServiceDetails = () => {
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
 
   useEffect(() => {
     const loadService = async () => {
@@ -142,7 +144,7 @@ const ServiceDetails = () => {
       </section>
 
       <section className="service-actions">
-        <button type="button">
+        <button type="button" onClick={() => setIsRequestModalOpen(true)}>
           Request Service
         </button>
         <Link to={`/services/${service.id}/edit`}>
@@ -155,6 +157,15 @@ const ServiceDetails = () => {
         </button>
         
       </section>
+
+      <RequestServiceModal
+        isOpen={isRequestModalOpen}
+        onClose={() => setIsRequestModalOpen(false)}
+        service={{
+          ...service,
+          provider_name: service.provider_name,
+        }}
+      />
     </main>
   );
 };

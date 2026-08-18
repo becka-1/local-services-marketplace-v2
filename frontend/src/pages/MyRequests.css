@@ -1,0 +1,61 @@
+.my-requests-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.requests-top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.view-toggle button {
+  background-color: #eee;
+  color: #333;
+}
+
+.view-toggle button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.request-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.request-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.request-card p {
+  margin: 0.5rem 0;
+}
+
+.request-date {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.status-pending { color: #f59f00; font-weight: bold; }
+.status-accepted { color: #2b8a3e; font-weight: bold; }
+.status-rejected { color: #c92a2a; font-weight: bold; }
+.status-completed { color: #1864ab; font-weight: bold; }
+.status-cancelled { color: #868e96; font-weight: bold; }
