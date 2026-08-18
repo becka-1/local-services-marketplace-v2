@@ -7,9 +7,25 @@ import ServiceDetailsModal from './ServiceDetailsModal.jsx';
 import "./ServiceCard.css";
 import { Link } from "react-router";
 
-const ServiceCard = ({ service }) => {
+const ServiceCard = ({ service, isOwner = false, onDelete }) => {
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async (e) => {
+    e.stopPropagation();
+    const confirmed = window.confirm(`Are you sure you want to delete "${service.title}"?`);
+    if (!confirmed) return;
+
+    if (onDelete) {
+      setDeleting(true);
+      try {
+        await onDelete(service.id);
+      } finally {
+        setDeleting(false);
+      }
+    }
+  };
 
   return (
     <>
@@ -69,22 +85,42 @@ const ServiceCard = ({ service }) => {
                     setIsDetailsModalOpen(true);
                   }}
                 >
-                  View Service Details
+                  View Details
                 </button>
               </div>
             </div>
 
-            <div className="request-button">
-              <button 
-                type="button" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsRequestModalOpen(true);
-                }}
-              >
-                Request Service
-              </button>
-            </div>
+            {isOwner ? (
+              <div className="owner-card-actions">
+                <Link
+                  to={`/services/${service.id}/edit`}
+                  className="card-edit-btn"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  ✏️ Edit Service
+                </Link>
+                <button
+                  type="button"
+                  className="card-delete-btn"
+                  onClick={handleDelete}
+                  disabled={deleting}
+                >
+                  {deleting ? "Deleting..." : "🗑️ Delete"}
+                </button>
+              </div>
+            ) : (
+              <div className="request-button">
+                <button 
+                  type="button" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsRequestModalOpen(true);
+                  }}
+                >
+                  Request Service
+                </button>
+              </div>
+            )}
             
           </div>
       </motion.article>

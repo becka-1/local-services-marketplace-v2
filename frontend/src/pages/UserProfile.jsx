@@ -167,6 +167,10 @@ import {
   getUserServices,
 } from "../services/userApi.js";
 
+import {
+  deleteService,
+} from "../services/serviceApi.js";
+
 import ProfileAvatar from "../components/ProfileAvatar.jsx";
 
 import ServiceCard from "../components/ServiceCard.jsx";
@@ -213,6 +217,16 @@ const UserProfile = () => {
 
     loadProfile();
   }, [id]);
+
+  const handleDeleteService = async (serviceId) => {
+    try {
+      await deleteService(serviceId, profile.user_id);
+      setServices((prev) => prev.filter((s) => s.id !== serviceId));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete service.");
+    }
+  };
 
   if (loading) {
     return <p>Loading profile...</p>;
@@ -337,6 +351,8 @@ const UserProfile = () => {
               <ServiceCard
                 key={service.id}
                 service={service}
+                isOwner={true}
+                onDelete={handleDeleteService}
               />
             ))}
           </div>

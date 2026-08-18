@@ -1,19 +1,17 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { getServiceById, deleteService } from "../services/serviceApi.js";
+import { getServiceById } from "../services/serviceApi.js";
 import ServiceGallery from "./ServiceGallery.jsx";
 import ProfileAvatar from "./ProfileAvatar.jsx";
 import RequestServiceModal from "./RequestServiceModal.jsx";
 import "./ServiceDetailsModal.css";
 
-const ServiceDetailsModal = ({ isOpen, onClose, serviceId, onDeleteSuccess }) => {
-  const navigate = useNavigate();
+const ServiceDetailsModal = ({ isOpen, onClose, serviceId }) => {
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (isOpen && serviceId) {
@@ -47,27 +45,6 @@ const ServiceDetailsModal = ({ isOpen, onClose, serviceId, onDeleteSuccess }) =>
   }, [isOpen, isRequestModalOpen, onClose]);
 
   if (!isOpen) return null;
-
-  const handleDelete = async () => {
-    const confirmed = window.confirm("Are you sure you want to delete this service?");
-    if (!confirmed) return;
-
-    try {
-      setDeleting(true);
-      await deleteService(service.id, service.provider_id || service.user_id);
-      onClose();
-      if (onDeleteSuccess) {
-        onDeleteSuccess(service.id);
-      } else {
-        window.location.reload();
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Failed to delete service.");
-    } finally {
-      setDeleting(false);
-    }
-  };
 
   return (
     <>
@@ -157,20 +134,12 @@ const ServiceDetailsModal = ({ isOpen, onClose, serviceId, onDeleteSuccess }) =>
                     >
                       Request Service
                     </button>
-                    <Link
-                      to={`/services/${service.id}/edit`}
-                      className="modal-action-btn btn-edit-link"
-                      onClick={onClose}
-                    >
-                      Edit Service
-                    </Link>
                     <button
                       type="button"
-                      className="modal-action-btn btn-delete"
-                      onClick={handleDelete}
-                      disabled={deleting}
+                      className="modal-action-btn btn-close-secondary"
+                      onClick={onClose}
                     >
-                      {deleting ? "Deleting..." : "Delete Service"}
+                      Close
                     </button>
                   </div>
                 </div>
