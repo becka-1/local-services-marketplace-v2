@@ -1,0 +1,86 @@
+import api from "./api.js";
+
+export const getServices = async (filters = {}) => {
+  const response = await api.get("/services", {
+    params: filters,
+  });
+
+  return response.data;
+};
+
+export const getServiceById = async id => {
+  const response = await api.get(`/services/${id}`);
+  return response.data;
+}
+
+export const createService = async (serviceData) => {
+  const response = await api.post(
+    "/services",
+    serviceData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return response.data;
+};
+
+export const getServiceImages = async (id) => {
+  const response = await api.get(
+    `/services/${id}/images`
+  );
+
+  return response.data;
+};
+
+export const updateService = async (
+  id,
+  serviceData
+) => {
+  const response = await api.put(
+    `/services/${id}`,
+    serviceData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return response.data;
+};
+
+export const deleteService = async (
+  id,
+  userId
+) => {
+  const response = await api.delete(
+    `/services/${id}`,
+    {
+      data: {
+        user_id: userId,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+export const deleteServiceImage = async (
+  serviceId,
+  imageId,
+  userId
+) => {
+  const response = await api.delete(
+    `/services/${serviceId}/images/${imageId}`,
+    {
+      data: {
+        user_id: userId,
+      },
+    }
+  );
+
+  return response.data;
+};
