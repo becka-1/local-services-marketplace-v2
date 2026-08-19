@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUser } from "../context/UserContext.jsx";
 import { createRequest } from "../services/requestApi.js";
 import "./RequestServiceModal.css";
 
 const RequestServiceModal = ({ isOpen, onClose, service }) => {
   const navigate = useNavigate();
-  const [requesterId, setRequesterId] = useState("");
+  const { currentUserId } = useUser();
+  const [requesterId, setRequesterId] = useState(currentUserId || "");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -19,8 +21,9 @@ const RequestServiceModal = ({ isOpen, onClose, service }) => {
       setSuccess(false);
       setMessage("");
       setCreatedRequestId(null);
+      setRequesterId(currentUserId || "");
     }
-  }, [isOpen]);
+  }, [isOpen, currentUserId]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {

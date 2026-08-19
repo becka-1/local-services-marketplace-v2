@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
-
+import { useNavigate, Link } from 'react-router';
+import { useUser } from "../context/UserContext.jsx";
 import { createService } from "../services/serviceApi.js";
 import { getCategories } from "../services/categoryApi.js";
 
 const CreateService = () => {
   const navigate = useNavigate();
+  const { currentUserId } = useUser();
 
   const [categories, setCategories] = useState([]);
 
   const [formData, setFormData] = useState({
-    user_id: "",
+    user_id: currentUserId || "",
     category_id: "",
     title: "",
     description: "",

@@ -11,7 +11,7 @@
 
 // const UserProfile = () => {
 //   const { id } = useParams();
-  
+
 //   const [user, setUser] = useState(null);
 //   const [services, setServices] = useState([]);
 
@@ -158,6 +158,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router';
+import { useUser } from "../context/UserContext.jsx";
 
 import {
   getProfile,
@@ -172,31 +173,26 @@ import {
 } from "../services/serviceApi.js";
 
 import ProfileAvatar from "../components/ProfileAvatar.jsx";
-
 import ServiceCard from "../components/ServiceCard.jsx";
 
 const UserProfile = () => {
   const { id } = useParams();
+  const { currentUserId } = useUser();
 
-  const [profile, setProfile] =
-    useState(null);
+  const [profile, setProfile] = useState(null);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [services, setServices] =
-    useState([]);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState("");
+  const isOwnProfile = Number(id) === Number(currentUserId);
 
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        const [
-          profileData,
-          serviceData,
-        ] = await Promise.all([
+        setLoading(true);
+        setError("");
+
+        const [profileData, serviceData] = await Promise.all([
           getProfile(id),
           getUserServices(id),
         ]);
@@ -205,10 +201,8 @@ const UserProfile = () => {
         setServices(serviceData);
       } catch (error) {
         console.error(error);
-
         setError(
-          error.response?.data?.message ||
-            "Failed to load profile."
+          error.response?.data?.message || "Failed to load profile."
         );
       } finally {
         setLoading(false);
@@ -235,46 +229,76 @@ const UserProfile = () => {
   };
 
   if (loading) {
-    return <p>Loading profile...</p>;
+    return (
+      <main className="user-profile-page">
+        <p className="loading-state">Loading profile...</p>
+      </main>
+    );
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return (
+      <main className="user-profile-page">
+        <p className="error-state">{error}</p>
+        <Link to="/services" className="back-link">
+          ← Back to services
+        </Link>
+      </main>
+    );
   }
 
   if (!profile) {
-    return <p>Profile not found.</p>;
+    return (
+      <main className="user-profile-page">
+        <p>Profile not found.</p>
+        <Link to="/services">← Back to services</Link>
+      </main>
+    );
   }
 
   return (
     <main className="user-profile-page">
+      {/* Top Action & Navigation Bar */}
       <div className="profile-top-nav">
-        <Link to="/services" className="back-link">
-          ← Back to services
-        </Link>
-        <div className="profile-actions">
-          <Link
-            to={`/users/${profile.user_id}/requests`}
-            className="profile-btn btn-requests"
-          >
-            📋 Service Requests
+        <div className="nav-left-group">
+          <Link to="/services" className="back-link">
+            ← Back to services
           </Link>
-          <Link
-            to={`/users/${profile.user_id}/edit`}
-            className="profile-btn btn-edit"
-          >
-            ✏️ Edit Profile
-          </Link>
+          {/* <span className={`profile-badge ${isOwnProfile ? "badge-own" : "badge-public"}`}>
+            {isOwnProfile ? "🌟 Your Profile" : "👤 Provider Profile"}
+          </span> */}
         </div>
+
+        {isOwnProfile && (
+          <div className="profile-actions">
+            <Link
+              to="/services/new"
+              className="profile-btn btn-new-service"
+            >
+              ➕ Post Service
+            </Link>
+            <Link
+              to={`/users/${profile.user_id}/requests`}
+              className="profile-btn btn-requests"
+            >
+              📋 Service Requests
+            </Link>
+            <Link
+              to={`/users/${profile.user_id}/edit`}
+              className="profile-btn btn-edit"
+            >
+              ✏️ Edit Profile
+            </Link>
+          </div>
+        )}
       </div>
 
+      {/* Main Profile Info Section */}
       <section className="profile-header">
         <ProfileAvatar
           userId={profile.user_id}
           name={profile.name}
-          hasProfilePicture={
-            profile.has_profile_picture
-          }
+          hasProfilePicture={profile.has_profile_picture}
           size="large"
         />
 
@@ -282,82 +306,103 @@ const UserProfile = () => {
           <h1>{profile.name}</h1>
 
           {profile.bio && (
-            <p>{profile.bio}</p>
+            <p className="profile-bio">{profile.bio}</p>
           )}
 
-          {profile.location && (
-            <p>
-              📍 {profile.location}
-            </p>
-          )}
+          <div className="profile-meta-details">
+            {profile.location && (
+              <p className="meta-item">
+                📍 <strong>Location:</strong> {profile.location}
+              </p>
+            )}
 
-          {profile.phone && (
-            <p>
-              📞 {profile.phone}
-            </p>
-          )}
+            {profile.phone && (
+              <p className="meta-item">
+                📞 <strong>Phone:</strong> {profile.phone}
+              </p>
+            )}
 
-          {profile.email && (
-            <p>
-              ✉ {profile.email}
-            </p>
-          )}
+            {profile.email && (
+              <p className="meta-item">
+                ✉ <strong>Email:</strong> {profile.email}
+              </p>
+            )}
 
-          {profile.website && (
-            <p>
-              🌐{" "}
-              <a
-                href={
-                  profile.website.startsWith("http")
-                    ? profile.website
-                    : `https://${profile.website}`
-                }
-                target="_blank"
-                rel="noreferrer"
-              >
-                {profile.website}
-              </a>
-            </p>
-          )}
-        </div>
-      </section>
-
-      {profile.social_links?.length > 0 && (
-        <section className="profile-socials">
-          <h2>Social Links</h2>
-
-          <div>
-            {profile.social_links.map(
-              (social) => (
+            {profile.website && (
+              <p className="meta-item">
+                🌐 <strong>Website:</strong>{" "}
                 <a
-                  key={social.id}
-                  href={social.url}
+                  href={
+                    profile.website.startsWith("http")
+                      ? profile.website
+                      : `https://${profile.website}`
+                  }
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {social.platform}
+                  {profile.website}
                 </a>
-              )
+              </p>
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* Social Links */}
+      {profile.social_links?.length > 0 && (
+        <section className="profile-socials">
+          <h2>Social Links</h2>
+          <div className="social-links-grid">
+            {profile.social_links.map((social) => (
+              <a
+                key={social.id}
+                href={social.url}
+                target="_blank"
+                rel="noreferrer"
+                className="social-badge"
+              >
+                🔗 {social.platform}
+              </a>
+            ))}
           </div>
         </section>
       )}
 
+      {/* Services Section */}
       <section className="profile-services">
-        <h2>Services</h2>
+        <div className="services-header-row">
+          <h2>
+            {isOwnProfile
+              ? `My Services (${services.length})`
+              : `Services by ${profile.name} (${services.length})`}
+          </h2>
+          {isOwnProfile && (
+            <Link to="/services/new" className="link-add-service">
+              + Post New Service
+            </Link>
+          )}
+        </div>
 
         {services.length === 0 ? (
-          <p>
-            This user hasn't posted any
-            services yet.
-          </p>
+          <div className="empty-services-card">
+            <p>
+              {isOwnProfile
+                ? "You haven't posted any services yet."
+                : "This user hasn't posted any services yet."}
+            </p>
+            {isOwnProfile && (
+              <Link to="/services/new" className="btn-create-first">
+                + Post Your First Service
+              </Link>
+            )}
+          </div>
         ) : (
           <div className="services-grid">
             {services.map((service) => (
               <ServiceCard
                 key={service.id}
                 service={service}
-                isOwner={true}
+                isOwner={isOwnProfile}
                 onDelete={handleDeleteService}
                 onUpdate={handleServiceUpdated}
               />
