@@ -7,6 +7,7 @@ import {
   deleteServiceImage,
 } from "../services/serviceApi.js";
 import { getCategories } from "../services/categoryApi.js";
+import ImageCropperModal from "./ImageCropperModal.jsx";
 import "./EditServiceModal.css";
 
 const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
@@ -15,6 +16,11 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
   const [imagesToDelete, setImagesToDelete] = useState([]);
   const [newImages, setNewImages] = useState([]);
   const [newImagePreviews, setNewImagePreviews] = useState([]);
+
+  // Cropper state
+  const [isCropperOpen, setIsCropperOpen] = useState(false);
+  const [filesToCrop, setFilesToCrop] = useState([]);
+  const [recropIndex, setRecropIndex] = useState(null);
 
   const [formData, setFormData] = useState({
     user_id: "",
@@ -110,10 +116,37 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const selectedFiles = Array.from(e.target.files);
-      setNewImages((prev) => [...prev, ...selectedFiles]);
-      // Reset input value so same files can be re-selected if needed
+      const remainingSlots = 5 - (existingImages.length - imagesToDelete.length + newImages.length);
+      const filesToProcess = selectedFiles.slice(0, Math.max(1, remainingSlots));
+
+      if (filesToProcess.length > 0) {
+        setRecropIndex(null);
+        setFilesToCrop(filesToProcess);
+        setIsCropperOpen(true);
+      }
       e.target.value = "";
     }
+  };
+
+  const handleCropperComplete = (croppedFiles) => {
+    if (recropIndex !== null && recropIndex >= 0) {
+      setNewImages((prev) => {
+        const updated = [...prev];
+        updated[recropIndex] = croppedFiles[0];
+        return updated;
+      });
+    } else {
+      setNewImages((prev) => [...prev, ...croppedFiles]);
+    }
+    setIsCropperOpen(false);
+    setFilesToCrop([]);
+    setRecropIndex(null);
+  };
+
+  const handleRecropNewImage = (idx) => {
+    setRecropIndex(idx);
+    setFilesToCrop([newImages[idx]]);
+    setIsCropperOpen(true);
   };
 
   const handleRemoveNewImage = (indexToRemove) => {
@@ -176,9 +209,6 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
 
   const activeExistingImages = existingImages.filter(
     (img) => !imagesToDelete.includes(img.id)
-  );
-  const markedExistingImages = existingImages.filter((img) =>
-    imagesToDelete.includes(img.id)
   );
 
   return (
@@ -322,16 +352,18 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
                               <small>Click to Undo</small>
                             </div>
                           ) : (
-                            <button
-                              type="button"
-                              className="delete-image-btn"
-                              onClick={() =>
-                                handleToggleDeleteExistingImage(img.id)
-                              }
-                              title="Mark image for deletion"
-                            >
-                              ✕
-                            </button>
+                            <div className="edit-thumb-actions">
+                              <button
+                                type="button"
+                                className="delete-image-btn"
+                                onClick={() =>
+                                  handleToggleDeleteExistingImage(img.id)
+                                }
+                                title="Mark image for deletion"
+                              >
+                                ✕
+                              </button>
+                            </div>
                           )}
                         </div>
                       );
@@ -344,7 +376,7 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
               {newImagePreviews.length > 0 && (
                 <div className="form-group">
                   <label className="new-images-label">
-                    Newly Selected Images ({newImagePreviews.length})
+                    Newly Selected & Cropped Images ({newImagePreviews.length})
                   </label>
                   <div className="edit-modal-images-grid">
                     {newImagePreviews.map((item, idx) => (
@@ -354,14 +386,24 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
                       >
                         <img src={item.url} alt={`Preview ${idx + 1}`} />
                         <span className="new-tag">NEW</span>
-                        <button
-                          type="button"
-                          className="delete-image-btn"
-                          onClick={() => handleRemoveNewImage(idx)}
-                          title="Remove from upload"
-                        >
-                          ✕
-                        </button>
+                        <div className="edit-thumb-actions">
+                          <button
+                            type="button"
+                            className="edit-thumb-btn-crop"
+                            onClick={() => handleRecropNewImage(idx)}
+                            title="Recrop this image"
+                          >
+                            ✂️
+                          </button>
+                          <button
+                            type="button"
+                            className="delete-image-btn"
+                            onClick={() => handleRemoveNewImage(idx)}
+                            title="Remove from upload"
+                          >
+                            ✕
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -381,6 +423,9 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
                   onChange={handleImageChange}
                   className="file-input"
                 />
+                <small className="form-hint">
+                  Uploaded images will open in the cropper to maintain uniform sizes.
+                </small>
               </div>
 
               <div className="edit-modal-actions">
@@ -408,6 +453,18 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
           )}
         </motion.div>
       </div>
+
+      {/* Image Cropper Modal */}
+      <ImageCropperModal
+        isOpen={isCropperOpen}
+        imagesToCrop={filesToCrop}
+        onComplete={handleCropperComplete}
+        onCancel={() => {
+          setIsCropperOpen(false);
+          setFilesToCrop([]);
+          setRecropIndex(null);
+        }}
+      />
     </AnimatePresence>
   );
 };
