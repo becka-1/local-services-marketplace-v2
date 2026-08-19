@@ -2,11 +2,12 @@ import db from "../db/db.js";
 
 export const createRequest = async (req, res) => {
   try {
-    const { service_id, requester_id, message } = req.body;
+    const { service_id, message } = req.body;
+    const requester_id = req.user.id;
 
-    if (!service_id || !requester_id || !message) {
+    if (!service_id || !message) {
       return res.status(400).json({
-        message: "Service ID, requester ID, and message are required.",
+        message: "Service ID and message are required.",
       });
     }
 
@@ -34,6 +35,10 @@ export const createRequest = async (req, res) => {
 export const getRequestsByRequester = async (req, res) => {
   try {
     const { userId } = req.params;
+
+    if (Number(userId) !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Forbidden. You can only view your own requests." });
+    }
 
     const result = await db.query(
       `
@@ -69,6 +74,10 @@ export const getRequestsByRequester = async (req, res) => {
 export const getRequestsByProvider = async (req, res) => {
   try {
     const { userId } = req.params;
+
+    if (Number(userId) !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Forbidden. You can only view your own requests." });
+    }
 
     const result = await db.query(
       `
@@ -135,7 +144,18 @@ export const getRequestById = async (req, res) => {
       return res.status(404).json({ message: "Request not found." });
     }
 
-    res.json(result.rows[0]);
+    const requestData = result.rows[0];
+
+    // Check permissions: must be requester, provider, or admin
+    if (
+      requestData.requester_id !== req.user.id &&
+      requestData.provider_id !== req.user.id &&
+      req.user.role !== 'admin'
+    ) {
+      return res.status(403).json({ message: "Forbidden. You cannot view this request." });
+    }
+
+    res.json(requestData);
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -150,7 +170,10 @@ export const updateRequest = async (req, res) => {
     const { message, status } = req.body;
 
     const requestResult = await db.query(
-      `SELECT id FROM service_requests WHERE id = $1`,
+      `SELECT sr.id, sr.requester_id, s.user_id AS provider_id 
+       FROM service_requests sr
+       JOIN services s ON sr.service_id = s.id
+       WHERE sr.id = $1`,
       [id]
     );
 
@@ -158,17 +181,28 @@ export const updateRequest = async (req, res) => {
       return res.status(404).json({ message: "Request not found." });
     }
 
+    const existingReq = requestResult.rows[0];
+    const isRequester = existingReq.requester_id === req.user.id;
+    const isProvider = existingReq.provider_id === req.user.id;
+    const isAdmin = req.user.role === 'admin';
+
     let query = `UPDATE service_requests SET updated_at = CURRENT_TIMESTAMP`;
     const values = [];
     let idx = 1;
 
     if (message !== undefined) {
+      if (!isRequester && !isAdmin) {
+        return res.status(403).json({ message: "Forbidden. Only the requester can update the message." });
+      }
       query += `, message = $${idx}`;
       values.push(message);
       idx++;
     }
 
     if (status !== undefined) {
+      if (!isProvider && !isAdmin) {
+        return res.status(403).json({ message: "Forbidden. Only the provider can update the status." });
+      }
       query += `, status = $${idx}`;
       values.push(status);
       idx++;
@@ -196,12 +230,16 @@ export const deleteRequest = async (req, res) => {
     const { id } = req.params;
 
     const requestResult = await db.query(
-      `SELECT id FROM service_requests WHERE id = $1`,
+      `SELECT id, requester_id FROM service_requests WHERE id = $1`,
       [id]
     );
 
     if (requestResult.rows.length === 0) {
       return res.status(404).json({ message: "Request not found." });
+    }
+
+    if (requestResult.rows[0].requester_id !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Forbidden. You can only delete your own requests." });
     }
 
     await db.query(`DELETE FROM service_requests WHERE id = $1`, [id]);

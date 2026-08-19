@@ -177,7 +177,7 @@ import ServiceCard from "../components/ServiceCard.jsx";
 
 const UserProfile = () => {
   const { id } = useParams();
-  const { currentUserId } = useUser();
+  const { currentUserId, currentUser } = useUser();
 
   const [profile, setProfile] = useState(null);
   const [services, setServices] = useState([]);
@@ -185,6 +185,7 @@ const UserProfile = () => {
   const [error, setError] = useState("");
 
   const isOwnProfile = Number(id) === Number(currentUserId);
+  const canEdit = isOwnProfile || currentUser?.role === 'admin';
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -269,7 +270,7 @@ const UserProfile = () => {
           </span> */}
         </div>
 
-        {isOwnProfile && (
+        {canEdit && (
           <div className="profile-actions">
             <Link
               to="/services/new"
@@ -376,7 +377,7 @@ const UserProfile = () => {
               ? `My Services (${services.length})`
               : `Services by ${profile.name} (${services.length})`}
           </h2>
-          {isOwnProfile && (
+          {canEdit && (
             <Link to="/services/new" className="link-add-service">
               + Post New Service
             </Link>
@@ -390,7 +391,7 @@ const UserProfile = () => {
                 ? "You haven't posted any services yet."
                 : "This user hasn't posted any services yet."}
             </p>
-            {isOwnProfile && (
+            {canEdit && (
               <Link to="/services/new" className="btn-create-first">
                 + Post Your First Service
               </Link>
@@ -402,7 +403,7 @@ const UserProfile = () => {
               <ServiceCard
                 key={service.id}
                 service={service}
-                isOwner={isOwnProfile}
+                isOwner={canEdit}
                 onDelete={handleDeleteService}
                 onUpdate={handleServiceUpdated}
               />

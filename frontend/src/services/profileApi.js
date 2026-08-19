@@ -44,7 +44,6 @@ export const addSocialLink = async (
     `/profiles/${userId}/social-links`,
     {
       ...socialData,
-      user_id: userId,
     }
   );
 
@@ -57,11 +56,7 @@ export const deleteSocialLink = async (
 ) => {
   const response = await api.delete(
     `/profiles/${userId}/social-links/${socialId}`,
-    {
-      data: {
-        user_id: userId,
-      },
-    }
+    {}
   );
 
   return response.data;

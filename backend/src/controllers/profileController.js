@@ -132,7 +132,6 @@ export const updateProfile = async (req, res) => {
     const { id } = req.params;
 
     const {
-      user_id,
       name,
       bio,
       phone,
@@ -141,8 +140,10 @@ export const updateProfile = async (req, res) => {
       website,
     } = req.body;
 
-
-
+    if (Number(id) !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Forbidden. You do not have permission to update this profile." });
+    }
+    
     if (!name || !name.trim()) {
       return res.status(400).json({
         message: "Name is required.",
@@ -244,6 +245,10 @@ export const deleteProfilePicture = async (
   try {
     const { id } = req.params;
 
+    if (Number(id) !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Forbidden. You do not have permission to modify this profile." });
+    }
+
     const result = await db.query(
       `
       UPDATE profiles
@@ -283,21 +288,10 @@ export const addSocialLink = async (
 ) => {
   try {
     const { id } = req.params;
+    const { platform, url } = req.body;
 
-    const {
-      user_id,
-      platform,
-      url,
-    } = req.body;
-
-    if (
-      !user_id ||
-      Number(user_id) !== Number(id)
-    ) {
-      return res.status(403).json({
-        message:
-          "You are not allowed to modify this profile.",
-      });
+    if (Number(id) !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Forbidden. You do not have permission to modify this profile." });
     }
 
     if (!platform || !url) {
@@ -347,21 +341,10 @@ export const deleteSocialLink = async (
   res
 ) => {
   try {
-    const {
-      id,
-      socialId,
-    } = req.params;
+    const { id, socialId } = req.params;
 
-    const { user_id } = req.body;
-
-    if (
-      !user_id ||
-      Number(user_id) !== Number(id)
-    ) {
-      return res.status(403).json({
-        message:
-          "You are not allowed to modify this profile.",
-      });
+    if (Number(id) !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Forbidden. You do not have permission to modify this profile." });
     }
 
     const result = await db.query(

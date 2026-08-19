@@ -131,6 +131,16 @@ const Navbar = () => {
                     >
                       ✏️ Edit Profile
                     </Link>
+                    {currentUser?.role === 'admin' && (
+                      <Link
+                        to={`/admin`}
+                        className="dropdown-item"
+                        style={{ color: '#007bff' }}
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        ⚙️ Admin Dashboard
+                      </Link>
+                    )}
                     <hr />
                     <button
                       type="button"

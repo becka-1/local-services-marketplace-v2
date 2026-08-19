@@ -57,12 +57,7 @@ export const deleteService = async (
   userId
 ) => {
   const response = await api.delete(
-    `/services/${id}`,
-    {
-      data: {
-        user_id: userId,
-      },
-    }
+    `/services/${id}`
   );
 
   return response.data;
@@ -74,12 +69,7 @@ export const deleteServiceImage = async (
   userId
 ) => {
   const response = await api.delete(
-    `/services/${serviceId}/images/${imageId}`,
-    {
-      data: {
-        user_id: userId,
-      },
-    }
+    `/services/${serviceId}/images/${imageId}`
   );
 
   return response.data;

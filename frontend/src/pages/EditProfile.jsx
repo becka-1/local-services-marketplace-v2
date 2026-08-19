@@ -179,12 +179,6 @@ const EditProfile = () => {
 
       const data = new FormData();
 
-      // Temporary until authentication
-      data.append(
-        "user_id",
-        id
-      );
-
       data.append(
         "name",
         formData.name

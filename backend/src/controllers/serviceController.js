@@ -143,7 +143,6 @@ export const createService = async (req, res) => {
 
   try {
     const {
-      user_id,
       category_id,
       title,
       description,
@@ -151,11 +150,13 @@ export const createService = async (req, res) => {
       location,
     } = req.body;
 
+    const user_id = req.user.id;
+
     // Basic validation
-    if (!user_id || !category_id || !title || !description) {
+    if (!category_id || !title || !description) {
       return res.status(400).json({
         message:
-          "User, category, title, and description are required.",
+          "Category, title, and description are required.",
       });
     }
 
@@ -307,7 +308,6 @@ export const updateService = async (req, res) => {
     const { id } = req.params;
 
     const {
-      user_id,
       category_id,
       title,
       description,
@@ -315,10 +315,10 @@ export const updateService = async (req, res) => {
       location,
     } = req.body;
 
-    if (!user_id || !category_id || !title || !description) {
+    if (!category_id || !title || !description) {
       return res.status(400).json({
         message:
-          "User, category, title, and description are required.",
+          "Category, title, and description are required.",
       });
     }
 
@@ -344,8 +344,12 @@ export const updateService = async (req, res) => {
 
     const service = serviceResult.rows[0];
 
-
-
+    if (service.user_id !== req.user.id && req.user.role !== 'admin') {
+      await client.query("ROLLBACK");
+      return res.status(403).json({
+        message: "Forbidden. You do not have permission to update this service.",
+      });
+    }
     const updatedResult = await client.query(
       `
       UPDATE services
@@ -440,8 +444,11 @@ export const deleteService = async (req, res) => {
 
     const service = serviceResult.rows[0];
 
-
-
+    if (service.user_id !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({
+        message: "Forbidden. You do not have permission to delete this service.",
+      });
+    }
     await db.query(
       `
       DELETE FROM services
@@ -484,8 +491,11 @@ export const deleteServiceImage = async (req, res) => {
 
     const service = serviceResult.rows[0];
 
-
-
+    if (service.user_id !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({
+        message: "Forbidden. You do not have permission to delete this image.",
+      });
+    }
     const imageResult = await db.query(
       `
       DELETE FROM service_images
