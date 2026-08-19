@@ -1,30 +1,27 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { getMe } from "../services/authApi.js";
 import { getProfile } from "../services/profileApi.js";
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [currentUserId, setCurrentUserIdState] = useState(() => {
-    return localStorage.getItem("current_user_id") || "1";
-  });
+  const [currentUser, setCurrentUser] = useState(null); // Auth user details from JWT
+  const [currentUserProfile, setCurrentUserProfile] = useState(null); // Full profile details
+  const [loadingUser, setLoadingUser] = useState(true);
 
-  const [currentUserProfile, setCurrentUserProfile] = useState(null);
-  const [loadingUser, setLoadingUser] = useState(false);
-
-  const setCurrentUserId = (id) => {
-    const stringId = String(id);
-    setCurrentUserIdState(stringId);
-    localStorage.setItem("current_user_id", stringId);
-  };
-
-  const loadCurrentUserProfile = async (id) => {
-    if (!id) return;
+  // Authenticate user on load
+  const loadAuthUser = async () => {
     try {
       setLoadingUser(true);
-      const data = await getProfile(id);
-      setCurrentUserProfile(data);
+      const data = await getMe();
+      setCurrentUser(data.user);
+      
+      // Also fetch full profile data for their provider profile view
+      const profileData = await getProfile(data.user.id);
+      setCurrentUserProfile(profileData);
     } catch (err) {
-      console.warn("Could not load current user profile for ID:", id);
+      console.warn("Could not load authenticated user.");
+      setCurrentUser(null);
       setCurrentUserProfile(null);
     } finally {
       setLoadingUser(false);
@@ -32,21 +29,42 @@ export const UserProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    loadCurrentUserProfile(currentUserId);
-  }, [currentUserId]);
+    loadAuthUser();
+
+    // Listen for 401 Unauthorized events from axios
+    const handleAuthFailed = () => {
+      setCurrentUser(null);
+      setCurrentUserProfile(null);
+    };
+
+    window.addEventListener('auth-failed', handleAuthFailed);
+    return () => window.removeEventListener('auth-failed', handleAuthFailed);
+  }, []);
 
   const refreshCurrentUser = () => {
-    loadCurrentUserProfile(currentUserId);
+    loadAuthUser();
   };
+
+  // Utility to clear user when logging out
+  const handleLogoutSuccess = () => {
+    setCurrentUser(null);
+    setCurrentUserProfile(null);
+  };
+
+  // Computed properties
+  const currentUserId = currentUser ? currentUser.id.toString() : null;
+  const isAuthenticated = !!currentUser;
 
   return (
     <UserContext.Provider
       value={{
+        currentUser,
         currentUserId,
-        setCurrentUserId,
+        isAuthenticated,
         currentUserProfile,
         loadingUser,
         refreshCurrentUser,
+        handleLogoutSuccess,
       }}
     >
       {children}

@@ -1,5 +1,6 @@
 import express from 'express';
 import upload from '../middleware/updload.js';
+import { verifyToken } from '../middleware/authMiddleware.js';
 
 import {
   getAllServices,
@@ -25,18 +26,21 @@ router.get("/:id", getServiceById);
 
 router.post(
   "/",
+  verifyToken,
   upload.array("images", 5),
   createService
 );
 
 router.patch(
   "/:id",
+  verifyToken,
   upload.array("images", 5),
   updateService
 );
 
 router.delete(
   "/:id",
+  verifyToken,
   deleteService
 );
 
@@ -57,6 +61,7 @@ router.get(
 
 router.delete(
   "/:id/images/:imageId",
+  verifyToken,
   deleteServiceImage
 );
 

@@ -1,4 +1,5 @@
 import express from 'express';
+import { verifyToken } from '../middleware/authMiddleware.js';
 import {
   createRequest,
   getRequestsByRequester,
@@ -10,11 +11,11 @@ import {
 
 const router = express.Router();
 
-router.post("/", createRequest);
-router.get("/requester/:userId", getRequestsByRequester);
-router.get("/provider/:userId", getRequestsByProvider);
-router.get("/:id", getRequestById);
-router.patch("/:id", updateRequest);
-router.delete("/:id", deleteRequest);
+router.post("/", verifyToken, createRequest);
+router.get("/requester/:userId", verifyToken, getRequestsByRequester);
+router.get("/provider/:userId", verifyToken, getRequestsByProvider);
+router.get("/:id", verifyToken, getRequestById);
+router.patch("/:id", verifyToken, updateRequest);
+router.delete("/:id", verifyToken, deleteRequest);
 
 export default router;
