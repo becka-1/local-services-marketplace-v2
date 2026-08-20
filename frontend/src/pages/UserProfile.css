@@ -719,3 +719,257 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   INLINE EDITING STYLES
+   ========================================================================== */
+.inline-display, .inline-edit-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.inline-editable-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  margin: -6px -8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  min-height: 28px;
+}
+
+.inline-editable-text:hover {
+  background-color: #f1f5f9;
+}
+
+.inline-editable-text:hover .edit-icon {
+  opacity: 1;
+}
+
+.edit-icon {
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  color: #64748b;
+}
+
+.inline-placeholder {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.inline-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #6366f1;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: #0f172a;
+  outline: none;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.inline-input.multiline {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Avatar Edit Overlay */
+.avatar-edit-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  gap: 6px;
+  background: rgba(0,0,0,0.6);
+  padding: 4px 8px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+  z-index: 5;
+}
+
+.avatar-edit-btn, .avatar-remove-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px;
+  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-edit-btn:hover, .avatar-remove-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Social Links Editing */
+.social-pill-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.social-remove-btn {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #ef4444;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.social-remove-btn:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.add-social-btn {
+  background: #f1f5f9;
+  border: 1px dashed #cbd5e1;
+  color: #475569;
+  padding: 8px 14px;
+  border-radius: 99px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-social-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.inline-social-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  width: 100%;
+}
+
+.inline-social-form select, .inline-social-form input {
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.inline-social-form select:focus, .inline-social-form input:focus {
+  border-color: #6366f1;
+}
+
+.social-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.btn-cancel-social {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+}
+
+.btn-cancel-social:hover {
+  background: #f1f5f9;
+}
+
+.btn-save-social {
+  padding: 6px 12px;
+  background: #4f46e5;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+}
+
+.btn-save-social:hover {
+  background: #4338ca;
+}
+
+/* Unsaved Changes Banner */
+.unsaved-changes-banner {
+  background: #fffbeb;
+  border-bottom: 1px solid #fde68a;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 60px; /* Adjust based on navbar height */
+  z-index: 40;
+  color: #92400e;
+  font-weight: 600;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.unsaved-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-cancel-changes {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #d97706;
+  color: #b45309;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel-changes:hover {
+  background: #fef3c7;
+}
+
+.btn-save-changes {
+  padding: 8px 16px;
+  background: #d97706;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-save-changes:hover {
+  background: #b45309;
+}

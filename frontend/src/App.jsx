@@ -5,7 +5,6 @@ import Home from './pages/Home.jsx';
 import Services from './pages/Services.jsx';
 import UserProfile from './pages/UserProfile.jsx';
 import CreateService from './pages/CreateService.jsx';
-import EditProfile from './pages/EditProfile.jsx';
 import MyRequests from './pages/MyRequests.jsx';
 import RequestDetails from './pages/RequestDetails.jsx';
 import EditRequest from './pages/EditRequest.jsx';
@@ -24,7 +23,6 @@ function App() {
             <Route path="/services" element={<Services />} />
             <Route path="/users/:id" element={<UserProfile />} />
             <Route path="/services/new" element={<ProtectedRoute><CreateService /></ProtectedRoute>} />
-            <Route path="/users/:id/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
             <Route path="/users/:id/requests" element={<ProtectedRoute><MyRequests /></ProtectedRoute>} />
             <Route path="/requests/:id" element={<ProtectedRoute><RequestDetails /></ProtectedRoute>} />
             <Route path="/requests/:id/edit" element={<ProtectedRoute><EditRequest /></ProtectedRoute>} />

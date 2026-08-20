@@ -127,13 +127,13 @@ const Navbar = () => {
                     >
                       📋 My Requests
                     </Link>
-                    <Link
+                    {/* <Link
                       to={`/users/${currentUserId}/edit`}
                       className="dropdown-item"
                       onClick={() => setShowUserMenu(false)}
                     >
                       ✏️ Edit Profile
-                    </Link>
+                    </Link> */}
                     {currentUser?.role === 'admin' && (
                       <Link
                         to={`/admin`}
@@ -164,18 +164,18 @@ const Navbar = () => {
           )}
         </div>
       </div>
-      
-      <LoginModal 
-        isOpen={showLoginModal} 
+
+      <LoginModal
+        isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
         onSwitchToSignup={() => {
           setShowLoginModal(false);
           setShowSignupModal(true);
         }}
       />
-      
-      <SignupModal 
-        isOpen={showSignupModal} 
+
+      <SignupModal
+        isOpen={showSignupModal}
         onClose={() => setShowSignupModal(false)}
         onSwitchToLogin={() => {
           setShowSignupModal(false);
