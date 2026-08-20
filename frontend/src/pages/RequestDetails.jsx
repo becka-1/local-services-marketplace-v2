@@ -111,6 +111,8 @@ const RequestDetails = () => {
           <div className="participant-info">
             <h3>Provider Info</h3>
             <p><strong>Name:</strong> {request.provider_name}</p>
+            <p><strong>Phone:</strong> {request.provider_phone || "N/A"}</p>
+            <p><strong>Email:</strong> {request.provider_email || "N/A"}</p>
           </div>
         </div>
       </section>

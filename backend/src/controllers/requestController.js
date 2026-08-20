@@ -128,6 +128,8 @@ export const getRequestById = async (req, res) => {
         s.title AS service_title,
         s.user_id AS provider_id,
         prov.name AS provider_name,
+        prov.phone AS provider_phone,
+        prov.email AS provider_email,
         req.name AS requester_name,
         req.phone AS requester_phone,
         req.email AS requester_email
