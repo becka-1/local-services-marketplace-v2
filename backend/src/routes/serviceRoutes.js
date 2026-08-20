@@ -11,6 +11,7 @@ import {
   updateService,
   deleteService,
   deleteServiceImage,
+  getFeaturedServices,
 } from "../controllers/serviceController.js";
 
 const router = express.Router();
@@ -21,6 +22,8 @@ const router = express.Router();
 // =========================
 
 router.get("/", getAllServices);
+
+router.get("/featured", getFeaturedServices);
 
 router.get("/:id", getServiceById);
 

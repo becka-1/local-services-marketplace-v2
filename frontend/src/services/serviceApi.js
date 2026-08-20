@@ -1,5 +1,10 @@
 import api from "./api.js";
 
+export const getFeaturedServices = async () => {
+  const response = await api.get("/services/featured");
+  return response.data;
+};
+
 export const getServices = async (filters = {}) => {
   const response = await api.get("/services", {
     params: filters,

@@ -60,13 +60,16 @@ const Navbar = () => {
     <header className="main-navbar">
       <div className="navbar-container">
         {/* Brand / Logo */}
-        <Link to="/services" className="navbar-brand">
+        <Link to="/" className="navbar-brand">
           <span className="brand-icon">🛠️</span>
           <span className="brand-name">LocalServices</span>
         </Link>
 
         {/* Center Navigation Links */}
         <nav className="navbar-nav">
+          <Link to="/" className="nav-link">
+            Home
+          </Link>
           <Link to="/services" className="nav-link">
             Browse Services
           </Link>

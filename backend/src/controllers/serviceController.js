@@ -523,3 +523,39 @@ export const deleteServiceImage = async (req, res) => {
     });
   }
 };
+
+export const getFeaturedServices = async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT
+        services.id,
+        services.title,
+        services.description,
+        services.price,
+        services.location,
+        services.created_at,
+        profiles.user_id AS user_id,
+        profiles.name AS provider_name,
+        categories.name AS category_name,
+        (SELECT id FROM service_images WHERE service_id = services.id ORDER BY created_at ASC LIMIT 1) as first_image_id
+      FROM services
+      JOIN profiles ON services.user_id = profiles.user_id
+      JOIN categories ON services.category_id = categories.id
+      ORDER BY RANDOM()
+      LIMIT 3;
+    `);
+    
+    const formattedRows = result.rows.map(row => {
+      const { first_image_id, ...rest } = row;
+      return {
+        ...rest,
+        image_url: first_image_id ? `/api/services/${row.id}/images/${first_image_id}` : null
+      };
+    });
+    
+    res.json(formattedRows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch featured services." });
+  }
+};

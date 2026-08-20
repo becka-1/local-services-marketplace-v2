@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router';
 import { UserProvider } from './context/UserContext.jsx';
 import Navbar from './components/Navbar.jsx';
+import Home from './pages/Home.jsx';
 import Services from './pages/Services.jsx';
 import UserProfile from './pages/UserProfile.jsx';
 import CreateService from './pages/CreateService.jsx';
@@ -19,7 +20,7 @@ function App() {
         <Navbar />
         <div className="app-content">
           <Routes>
-            <Route path="/" element={<Services />} />
+            <Route path="/" element={<Home />} />
             <Route path="/services" element={<Services />} />
             <Route path="/users/:id" element={<UserProfile />} />
             <Route path="/services/new" element={<ProtectedRoute><CreateService /></ProtectedRoute>} />
