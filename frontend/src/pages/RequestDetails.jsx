@@ -89,7 +89,7 @@ const RequestDetails = () => {
             className="service-link-btn"
             onClick={() => setIsServiceModalOpen(true)}
           >
-            {request.service_title} 🔍
+            {request.service_title} <i className="fa-solid fa-magnifying-glass"></i>
           </button>
         </h2>
         

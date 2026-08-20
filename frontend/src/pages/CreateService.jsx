@@ -218,7 +218,7 @@ const CreateService = () => {
           {images.length < 5 && (
             <div className="file-input-wrapper">
               <label htmlFor="serviceImagesInput" className="file-input-label">
-                <span className="upload-icon">📷</span>
+                <span className="upload-icon"><i className="fa-solid fa-camera"></i></span>
                 <strong>Click or Drag to Upload Images</strong>
                 <small>Auto-crops to consistent marketplace card dimensions (16:9 / 4:3)</small>
               </label>
@@ -253,7 +253,7 @@ const CreateService = () => {
                       onClick={() => handleRemoveImage(idx)}
                       title="Remove image"
                     >
-                      ✕
+                      <i className="fa-solid fa-xmark"></i>
                     </button>
                   </div>
                 </div>

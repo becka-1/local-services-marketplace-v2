@@ -254,7 +254,7 @@ const ImageCropperModal = ({
               onClick={onCancel}
               aria-label="Cancel cropping"
             >
-              ✕
+              <i className="fa-solid fa-xmark"></i>
             </button>
           </div>
 
@@ -317,7 +317,7 @@ const ImageCropperModal = ({
           {/* Crop Controls */}
           <div className="cropper-controls-bar">
             <div className="zoom-control-group">
-              <span className="control-icon">🔍</span>
+              <span className="control-icon"><i className="fa-solid fa-magnifying-glass"></i></span>
               <input
                 type="range"
                 min="1"
@@ -338,7 +338,7 @@ const ImageCropperModal = ({
                 onClick={handleRotate}
                 title="Rotate 90°"
               >
-                🔄 Rotate
+                <i className="fa-solid fa-rotate"></i> Rotate
               </button>
               <button
                 type="button"
@@ -346,7 +346,7 @@ const ImageCropperModal = ({
                 onClick={handleReset}
                 title="Reset crop"
               >
-                ↩ Reset
+                <i className="fa-solid fa-rotate-left"></i> Reset
               </button>
             </div>
           </div>

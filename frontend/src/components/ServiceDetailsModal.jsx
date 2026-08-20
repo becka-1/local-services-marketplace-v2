@@ -87,11 +87,11 @@ const ServiceDetailsModal = ({ isOpen, onClose, serviceId }) => {
 
                   <div className="service-modal-meta">
                     <span className="service-modal-price">
-                      💰 {service.price ? `${service.price} ETB` : "Price negotiable"}
+                      <i className="fa-solid fa-money-bill-wave"></i> {service.price ? `${service.price} ETB` : "Price negotiable"}
                     </span>
                     {service.location && (
                       <span className="service-modal-location">
-                        📍 {service.location}
+                        <i className="fa-solid fa-location-dot"></i> {service.location}
                       </span>
                     )}
                   </div>
@@ -120,7 +120,7 @@ const ServiceDetailsModal = ({ isOpen, onClose, serviceId }) => {
                         </Link>
                         {service.provider_bio && <p className="provider-bio">{service.provider_bio}</p>}
                         {service.provider_location && (
-                          <p className="provider-loc">📍 {service.provider_location}</p>
+                          <p className="provider-loc"><i className="fa-solid fa-location-dot"></i> {service.provider_location}</p>
                         )}
                       </div>
                     </div>

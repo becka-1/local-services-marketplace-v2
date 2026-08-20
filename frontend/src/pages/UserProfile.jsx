@@ -76,7 +76,7 @@ const InlineEdit = ({ value, label, name, type = "text", isEditing, onChange, mu
           ) : (
             <span className="inline-placeholder">{placeholder || `Add ${label ? label.toLowerCase() : 'value'}...`}</span>
           )}
-          <span className="edit-icon">✏️</span>
+          <span className="edit-icon"><i className="fa-solid fa-pen"></i></span>
         </div>
       ) : (
         multiline ? (
@@ -345,7 +345,7 @@ const UserProfile = () => {
     return (
       <div className="profile-error-container">
         <div className="error-card">
-          <span className="error-icon">⚠️</span>
+          <span className="error-icon"><i className="fa-solid fa-triangle-exclamation"></i></span>
           <h2>Profile Unavailable</h2>
           <p>{error || "We couldn't find the requested user profile."}</p>
           <Link to="/services" className="btn-back-services">
@@ -375,17 +375,17 @@ const UserProfile = () => {
           <div className="profile-banner-tags">
             {isOwnProfile && (
               <span className="profile-tag tag-own">
-                🌟 Your Account
+                <i className="fa-solid fa-star"></i> Your Account
               </span>
             )}
             {!isOwnProfile && isAdmin && (
               <span className="profile-tag tag-admin">
-                🛡️ Viewing as Admin
+                <i className="fa-solid fa-shield-halved"></i> Viewing as Admin
               </span>
             )}
             {profile.role === 'admin' && (
               <span className="profile-tag tag-role-admin">
-                ⚡ Admin
+                <i className="fa-solid fa-bolt"></i> Admin
               </span>
             )}
           </div>
@@ -424,7 +424,7 @@ const UserProfile = () => {
             {canEdit && (
               <div className="avatar-edit-overlay">
                 <label htmlFor="profile-picture-upload" className="avatar-edit-btn" title="Change picture">
-                  📷
+                  <i className="fa-solid fa-camera"></i>
                 </label>
                 <input
                   id="profile-picture-upload"
@@ -435,7 +435,7 @@ const UserProfile = () => {
                 />
                 {showPicture && (
                   <button type="button" className="avatar-remove-btn" onClick={handleRemovePicture} title="Remove picture">
-                    ✕
+                    <i className="fa-solid fa-xmark"></i>
                   </button>
                 )}
               </div>
@@ -460,10 +460,10 @@ const UserProfile = () => {
 
             <div className="identity-sub-details">
               <span className="detail-item">
-                📅 Member since {formatDate(profile.profile_created_at)}
+                <i className="fa-regular fa-calendar"></i> Member since {formatDate(profile.profile_created_at)}
               </span>
               <span className="detail-item">
-                💼 {services.length} {services.length === 1 ? "Service" : "Services"} Listed
+                <i className="fa-solid fa-briefcase"></i> {services.length} {services.length === 1 ? "Service" : "Services"} Listed
               </span>
             </div>
           </div>
@@ -475,14 +475,14 @@ const UserProfile = () => {
                   to={`/users/${profile.user_id}/requests`}
                   className="btn-profile-action btn-my-requests"
                 >
-                  📋 My Requests
+                  <i className="fa-solid fa-clipboard-list"></i> My Requests
                 </Link>
               )}
               <Link
                 to="/services/new"
                 className="btn-profile-action btn-add-service-primary"
               >
-                ➕ Post Service
+                <i className="fa-solid fa-plus"></i> Post Service
               </Link>
             </div>
           )}
@@ -513,7 +513,7 @@ const UserProfile = () => {
                 
                 {(canEdit || currentDisplayValues.email) && (
                   <div className="contact-row">
-                    <span className="contact-icon">✉️</span>
+                    <span className="contact-icon"><i className="fa-solid fa-envelope"></i></span>
                     <div className="contact-text">
                       <InlineEdit 
                         value={currentDisplayValues.email} 
@@ -529,7 +529,7 @@ const UserProfile = () => {
 
                 {(canEdit || currentDisplayValues.phone) && (
                   <div className="contact-row">
-                    <span className="contact-icon">📞</span>
+                    <span className="contact-icon"><i className="fa-solid fa-phone"></i></span>
                     <div className="contact-text">
                       <InlineEdit 
                         value={currentDisplayValues.phone} 
@@ -545,7 +545,7 @@ const UserProfile = () => {
 
                 {(canEdit || currentDisplayValues.location) && (
                   <div className="contact-row">
-                    <span className="contact-icon">📍</span>
+                    <span className="contact-icon"><i className="fa-solid fa-location-dot"></i></span>
                     <div className="contact-text">
                        <InlineEdit 
                         value={currentDisplayValues.location} 
@@ -560,7 +560,7 @@ const UserProfile = () => {
 
                 {(canEdit || currentDisplayValues.website) && (
                   <div className="contact-row">
-                    <span className="contact-icon">🌐</span>
+                    <span className="contact-icon"><i className="fa-solid fa-globe"></i></span>
                     <div className="contact-text">
                        <InlineEdit 
                         value={currentDisplayValues.website} 
@@ -594,7 +594,7 @@ const UserProfile = () => {
                         rel="noreferrer"
                         className="social-pill-btn"
                       >
-                        <span className="social-pill-icon">🔗</span>
+                        <span className="social-pill-icon"><i className="fa-solid fa-link"></i></span>
                         <span className="social-pill-platform">{social.platform}</span>
                       </a>
                       {canEdit && (
@@ -603,7 +603,7 @@ const UserProfile = () => {
                           onClick={() => handleDeleteSocialLink(social.id)}
                           title="Remove link"
                         >
-                          ✕
+                          <i className="fa-solid fa-xmark"></i>
                         </button>
                       )}
                     </div>
@@ -672,7 +672,7 @@ const UserProfile = () => {
               {services.length > 0 && (
                 <div className="services-filter-bar">
                   <div className="search-input-wrapper">
-                    <span className="search-icon">🔍</span>
+                    <span className="search-icon"><i className="fa-solid fa-magnifying-glass"></i></span>
                     <input
                       type="text"
                       placeholder="Search within this provider's services..."
@@ -686,7 +686,7 @@ const UserProfile = () => {
                         onClick={() => setServiceSearch("")}
                         className="clear-search-btn"
                       >
-                        ✕
+                        <i className="fa-solid fa-xmark"></i>
                       </button>
                     )}
                   </div>
@@ -695,7 +695,7 @@ const UserProfile = () => {
 
               {services.length === 0 ? (
                 <div className="empty-services-state">
-                  <div className="empty-icon-wrap">🛠️</div>
+                  <div className="empty-icon-wrap"><i className="fa-solid fa-screwdriver-wrench"></i></div>
                   <h3>No services listed yet</h3>
                   <p>
                     {isOwnProfile
@@ -710,7 +710,7 @@ const UserProfile = () => {
                 </div>
               ) : filteredServices.length === 0 ? (
                 <div className="empty-services-state no-search-matches">
-                  <div className="empty-icon-wrap">🔎</div>
+                  <div className="empty-icon-wrap"><i className="fa-solid fa-magnifying-glass"></i></div>
                   <h3>No matching services</h3>
                   <p>No services matched your search term "{serviceSearch}".</p>
                   <button

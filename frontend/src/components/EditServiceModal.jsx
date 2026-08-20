@@ -360,7 +360,7 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
                                 }
                                 title="Mark image for deletion"
                               >
-                                ✕
+                                <i className="fa-solid fa-xmark"></i>
                               </button>
                             </div>
                           )}
@@ -400,7 +400,7 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
                             onClick={() => handleRemoveNewImage(idx)}
                             title="Remove from upload"
                           >
-                            ✕
+                            <i className="fa-solid fa-xmark"></i>
                           </button>
                         </div>
                       </div>

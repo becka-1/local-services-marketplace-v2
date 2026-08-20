@@ -61,7 +61,7 @@ const Navbar = () => {
       <div className="navbar-container">
         {/* Brand / Logo */}
         <Link to="/" className="navbar-brand">
-          <span className="brand-icon">🛠️</span>
+          <span className="brand-icon"><i className="fa-solid fa-screwdriver-wrench"></i></span>
           <span className="brand-name">LocalServices</span>
         </Link>
 
@@ -103,7 +103,7 @@ const Navbar = () => {
                 <span className="user-name-display">
                   {currentUserProfile?.name || "User"}
                 </span>
-                <span className={`dropdown-arrow ${showUserMenu ? "open" : ""}`}>▾</span>
+                <span className={`dropdown-arrow ${showUserMenu ? "open" : ""}`}><i className="fa-solid fa-caret-down"></i></span>
               </button>
 
               {showUserMenu && (
@@ -118,21 +118,21 @@ const Navbar = () => {
                       className="dropdown-item"
                       onClick={() => setShowUserMenu(false)}
                     >
-                      👤 My Profile
+                      <i className="fa-solid fa-user"></i> My Profile
                     </Link>
                     <Link
                       to={`/users/${currentUserId}/requests`}
                       className="dropdown-item"
                       onClick={() => setShowUserMenu(false)}
                     >
-                      📋 My Requests
+                      <i className="fa-solid fa-clipboard-list"></i> My Requests
                     </Link>
                     {/* <Link
                       to={`/users/${currentUserId}/edit`}
                       className="dropdown-item"
                       onClick={() => setShowUserMenu(false)}
                     >
-                      ✏️ Edit Profile
+                      <i className="fa-solid fa-pen"></i> Edit Profile
                     </Link> */}
                     {currentUser?.role === 'admin' && (
                       <Link
@@ -141,7 +141,7 @@ const Navbar = () => {
                         style={{ color: '#007bff' }}
                         onClick={() => setShowUserMenu(false)}
                       >
-                        ⚙️ Admin Dashboard
+                        <i className="fa-solid fa-gear"></i> Admin Dashboard
                       </Link>
                     )}
                     <hr />
@@ -150,7 +150,7 @@ const Navbar = () => {
                       className="dropdown-item btn-logout"
                       onClick={handleLogout}
                     >
-                      🚪 Log Out
+                      <i className="fa-solid fa-arrow-right-from-bracket"></i> Log Out
                     </button>
                   </div>
                 </div>

@@ -11,12 +11,12 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("stats");
 
   const tabs = [
-    { id: "stats", label: "📊 Overview" },
-    { id: "users", label: "👥 Users" },
-    { id: "services", label: "🛠️ Services" },
-    { id: "requests", label: "📨 Requests" },
-    { id: "categories", label: "📁 Categories" },
-    { id: "reports", label: "🚩 Reports" },
+    { id: "stats", label: <><i className="fa-solid fa-chart-bar"></i> Overview</> },
+    { id: "users", label: <><i className="fa-solid fa-users"></i> Users</> },
+    { id: "services", label: <><i className="fa-solid fa-screwdriver-wrench"></i> Services</> },
+    { id: "requests", label: <><i className="fa-solid fa-envelope-open-text"></i> Requests</> },
+    { id: "categories", label: <><i className="fa-solid fa-folder"></i> Categories</> },
+    { id: "reports", label: <><i className="fa-solid fa-flag"></i> Reports</> },
   ];
 
   const renderTabContent = () => {

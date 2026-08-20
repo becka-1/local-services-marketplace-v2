@@ -102,7 +102,7 @@ const ServiceCard = ({ service, isOwner = false, onDelete, onUpdate }) => {
                     setIsEditModalOpen(true);
                   }}
                 >
-                  ✏️ Edit Service
+                  <i className="fa-solid fa-pen"></i> Edit Service
                 </button>
                 <button
                   type="button"
@@ -110,7 +110,7 @@ const ServiceCard = ({ service, isOwner = false, onDelete, onUpdate }) => {
                   onClick={handleDelete}
                   disabled={deleting}
                 >
-                  {deleting ? "Deleting..." : "🗑️ Delete"}
+                  {deleting ? "Deleting..." : <><i className="fa-solid fa-trash"></i> Delete</>}
                 </button>
               </div>
             ) : (

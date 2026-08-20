@@ -53,17 +53,17 @@ const Home = () => {
         <h2 className="section-title">How It Works</h2>
         <div className="steps-container">
           <div className="step-card">
-            <div className="step-icon">🔍</div>
+            <div className="step-icon"><i className="fa-solid fa-magnifying-glass"></i></div>
             <h3>1. Browse</h3>
             <p>Explore a wide variety of services offered by verified local professionals.</p>
           </div>
           <div className="step-card">
-            <div className="step-icon">🤝</div>
+            <div className="step-icon"><i className="fa-solid fa-handshake"></i></div>
             <h3>2. Connect</h3>
             <p>Reach out securely, negotiate terms, and finalize details directly.</p>
           </div>
           <div className="step-card">
-            <div className="step-icon">⭐</div>
+            <div className="step-icon"><i className="fa-solid fa-star"></i></div>
             <h3>3. Get it Done</h3>
             <p>Enjoy quality service, leave a review, and strengthen your community.</p>
           </div>
@@ -100,7 +100,7 @@ const Home = () => {
                   <span className="card-category">{service.category_name}</span>
                   <h3 className="card-title">{service.title}</h3>
                   <p className="card-provider">By {service.provider_name}</p>
-                  <p className="card-location">📍 {service.location}</p>
+                  <p className="card-location"><i className="fa-solid fa-location-dot"></i> {service.location}</p>
                 </div>
               </div>
             ))}
