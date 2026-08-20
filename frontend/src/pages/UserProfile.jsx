@@ -1,179 +1,12 @@
-// import { useEffect, useState } from 'react';
-// import { Link, useParams } from 'react-router';
-// import './UserProfile.css';
-
-// import {
-//   getUserProfile,
-//   getUserServices,
-// } from "../services/userApi.js";
-
-// import ServiceCard from "../components/ServiceCard.jsx";
-
-// const UserProfile = () => {
-//   const { id } = useParams();
-
-//   const [user, setUser] = useState(null);
-//   const [services, setServices] = useState([]);
-
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState("");
-
-//   useEffect(() => {
-//     const loadProfile = async () => {
-//       try {
-//         setLoading(true);
-//         setError("");
-
-//         const [userData, servicesData] =
-//           await Promise.all([
-//             getUserProfile(id),
-//             getUserServices(id),
-//           ]);
-
-//         setUser(userData);
-//         setServices(servicesData);
-//       } catch (error) {
-//         console.error(error);
-
-//         if (error.response?.status === 404) {
-//           setError("User profile not found.");
-//         } else {
-//           setError("Failed to load profile.");
-//         }
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     loadProfile();
-//   }, [id]);
-
-//   if (loading) {
-//     return <p>Loading profile...</p>;
-//   }
-
-//   if (error) {
-//     return (
-//       <main>
-//         <p>{error}</p>
-
-//         <Link to="/services">
-//           Back to services
-//         </Link>
-//       </main>
-//     );
-//   }
-//   console.log(services)
-//   return (
-//     <main>
-//       <Link to="/services">
-//         ← Back to services
-//       </Link>
-
-//       <section className="profile-header">
-//         <div className="profile-avatar">
-//           {user.name?.charAt(0).toUpperCase()}
-//         </div>
-
-//         <div className="profile-info">
-//           <h1>{user.name}</h1>
-
-//           {user.bio && (
-//             <p className="profile-bio">
-//               {user.bio}
-//             </p>
-//           )}
-
-//           {user.location && (
-//             <p>
-//               Location: {user.location}
-//             </p>
-//           )}
-//         </div>
-//       </section>
-
-//       <section className="profile-contact">
-//         <h2>Contact</h2>
-
-//         <p>
-//           <strong>Phone:</strong>{" "}
-//           {user.phone}
-//         </p>
-
-//         {user.email && (
-//           <p>
-//             <strong>Email:</strong>{" "}
-//             {user.email}
-//           </p>
-//         )}
-//       </section>
-
-//       {user.social_links?.length > 0 && (
-//         <section className="profile-socials">
-//           <h2>Social links</h2>
-
-//           <div className="social-links">
-//             {user.social_links.map((social) => (
-//               <a
-//                 key={social.platform}
-//                 href={social.url}
-//                 target="_blank"
-//                 rel="noopener noreferrer"
-//               >
-//                 {social.platform}
-//               </a>
-//             ))}
-//           </div>
-//         </section>
-//       )}
-
-//       <section className="profile-services">
-//         <h2>
-//           Services by {user.name}
-//         </h2>
-
-//         {services.length === 0 ? (
-//           <p>
-//             This user hasn't posted any services yet.
-//           </p>
-//         ) : (
-//           <div className="services-grid">
-//             {services.map((service) => (
-//               <ServiceCard
-//                 key={service.id}
-//                 service={{
-//                   ...service,
-//                   provider_name: user.name,
-//                 }}
-//               />
-//             ))}
-//           </div>
-//         )}
-//       </section>
-//     </main>
-//   );
-// };
-
-// export default UserProfile;
-
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { useUser } from "../context/UserContext.jsx";
-
-import {
-  getProfile,
-} from "../services/profileApi.js";
-
-import {
-  getUserServices,
-} from "../services/userApi.js";
-
-import {
-  deleteService,
-} from "../services/serviceApi.js";
-
+import { getProfile } from "../services/profileApi.js";
+import { getUserServices } from "../services/userApi.js";
+import { deleteService } from "../services/serviceApi.js";
 import ProfileAvatar from "../components/ProfileAvatar.jsx";
 import ServiceCard from "../components/ServiceCard.jsx";
+import "./UserProfile.css";
 
 const UserProfile = () => {
   const { id } = useParams();
@@ -183,9 +16,11 @@ const UserProfile = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [serviceSearch, setServiceSearch] = useState("");
 
   const isOwnProfile = Number(id) === Number(currentUserId);
-  const canEdit = isOwnProfile || currentUser?.role === 'admin';
+  const isAdmin = currentUser?.role === 'admin';
+  const canEdit = isOwnProfile || isAdmin;
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -199,11 +34,11 @@ const UserProfile = () => {
         ]);
 
         setProfile(profileData);
-        setServices(serviceData);
-      } catch (error) {
-        console.error(error);
+        setServices(serviceData || []);
+      } catch (err) {
+        console.error(err);
         setError(
-          error.response?.data?.message || "Failed to load profile."
+          err.response?.data?.message || "Failed to load user profile."
         );
       } finally {
         setLoading(false);
@@ -229,189 +64,340 @@ const UserProfile = () => {
     );
   };
 
+  const filteredServices = services.filter((s) => {
+    if (!serviceSearch.trim()) return true;
+    const query = serviceSearch.toLowerCase();
+    return (
+      s.title?.toLowerCase().includes(query) ||
+      s.description?.toLowerCase().includes(query) ||
+      s.category_name?.toLowerCase().includes(query) ||
+      s.location?.toLowerCase().includes(query)
+    );
+  });
+
+  const formatDate = (dateString) => {
+    if (!dateString) return null;
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
+    });
+  };
+
   if (loading) {
     return (
-      <main className="user-profile-page">
-        <p className="loading-state">Loading profile...</p>
-      </main>
+      <div className="profile-loading-container">
+        <div className="profile-spinner"></div>
+        <p>Loading profile...</p>
+      </div>
     );
   }
 
-  if (error) {
+  if (error || !profile) {
     return (
-      <main className="user-profile-page">
-        <p className="error-state">{error}</p>
-        <Link to="/services" className="back-link">
-          ← Back to services
-        </Link>
-      </main>
-    );
-  }
-
-  if (!profile) {
-    return (
-      <main className="user-profile-page">
-        <p>Profile not found.</p>
-        <Link to="/services">← Back to services</Link>
-      </main>
+      <div className="profile-error-container">
+        <div className="error-card">
+          <span className="error-icon">⚠️</span>
+          <h2>Profile Unavailable</h2>
+          <p>{error || "We couldn't find the requested user profile."}</p>
+          <Link to="/services" className="btn-back-services">
+            ← Explore Services
+          </Link>
+        </div>
+      </div>
     );
   }
 
   return (
-    <main className="user-profile-page">
-      {/* Top Action & Navigation Bar */}
-      <div className="profile-top-nav">
-        <div className="nav-left-group">
-          <Link to="/services" className="back-link">
-            ← Back to services
+    <div className="profile-page-wrapper">
+      {/* Cover Banner Header */}
+      <div className="profile-cover-banner">
+        <div className="cover-ambient-shape cover-shape-1"></div>
+        <div className="cover-ambient-shape cover-shape-2"></div>
+        <div className="cover-top-bar">
+          <Link to="/services" className="profile-breadcrumb-link">
+            ← Back to Services
           </Link>
-          {/* <span className={`profile-badge ${isOwnProfile ? "badge-own" : "badge-public"}`}>
-            {isOwnProfile ? "🌟 Your Profile" : "👤 Provider Profile"}
-          </span> */}
-        </div>
-
-        {canEdit && (
-          <div className="profile-actions">
-            <Link
-              to="/services/new"
-              className="profile-btn btn-new-service"
-            >
-              ➕ Post Service
-            </Link>
-            <Link
-              to={`/users/${profile.user_id}/requests`}
-              className="profile-btn btn-requests"
-            >
-              📋 Service Requests
-            </Link>
-            <Link
-              to={`/users/${profile.user_id}/edit`}
-              className="profile-btn btn-edit"
-            >
-              ✏️ Edit Profile
-            </Link>
+          <div className="profile-banner-tags">
+            {isOwnProfile && (
+              <span className="profile-tag tag-own">
+                🌟 Your Account
+              </span>
+            )}
+            {!isOwnProfile && isAdmin && (
+              <span className="profile-tag tag-admin">
+                🛡️ Viewing as Admin
+              </span>
+            )}
+            {profile.role === 'admin' && (
+              <span className="profile-tag tag-role-admin">
+                ⚡ Admin
+              </span>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
-      {/* Main Profile Info Section */}
-      <section className="profile-header">
-        <ProfileAvatar
-          userId={profile.user_id}
-          name={profile.name}
-          hasProfilePicture={profile.has_profile_picture}
-          size="large"
-        />
-
-        <div className="profile-info">
-          <h1>{profile.name}</h1>
-
-          {profile.bio && (
-            <p className="profile-bio">{profile.bio}</p>
-          )}
-
-          <div className="profile-meta-details">
-            {profile.location && (
-              <p className="meta-item">
-                📍 <strong>Location:</strong> {profile.location}
-              </p>
-            )}
-
-            {profile.phone && (
-              <p className="meta-item">
-                📞 <strong>Phone:</strong> {profile.phone}
-              </p>
-            )}
-
-            {profile.email && (
-              <p className="meta-item">
-                ✉ <strong>Email:</strong> {profile.email}
-              </p>
-            )}
-
-            {profile.website && (
-              <p className="meta-item">
-                🌐 <strong>Website:</strong>{" "}
-                <a
-                  href={
-                    profile.website.startsWith("http")
-                      ? profile.website
-                      : `https://${profile.website}`
-                  }
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {profile.website}
-                </a>
-              </p>
-            )}
+      <div className="profile-main-container">
+        {/* Profile Card Overlay */}
+        <div className="profile-header-card">
+          <div className="profile-avatar-wrapper">
+            <ProfileAvatar
+              userId={profile.user_id}
+              name={profile.name}
+              hasProfilePicture={profile.has_profile_picture}
+              size="large"
+            />
+            <div className="avatar-status-indicator" title="Active user"></div>
           </div>
-        </div>
-      </section>
 
-      {/* Social Links */}
-      {profile.social_links?.length > 0 && (
-        <section className="profile-socials">
-          <h2>Social Links</h2>
-          <div className="social-links-grid">
-            {profile.social_links.map((social) => (
-              <a
-                key={social.id}
-                href={social.url}
-                target="_blank"
-                rel="noreferrer"
-                className="social-badge"
-              >
-                🔗 {social.platform}
-              </a>
-            ))}
+          <div className="profile-identity-block">
+            <div className="identity-title-row">
+              <h1 className="profile-full-name">{profile.name}</h1>
+            </div>
+
+            <div className="identity-sub-details">
+              {profile.location && (
+                <span className="detail-item">
+                  📍 {profile.location}
+                </span>
+              )}
+              {profile.profile_created_at && (
+                <span className="detail-item">
+                  📅 Member since {formatDate(profile.profile_created_at)}
+                </span>
+              )}
+              <span className="detail-item">
+                💼 {services.length} {services.length === 1 ? "Service" : "Services"} Listed
+              </span>
+            </div>
           </div>
-        </section>
-      )}
 
-      {/* Services Section */}
-      <section className="profile-services">
-        <div className="services-header-row">
-          <h2>
-            {isOwnProfile
-              ? `My Services (${services.length})`
-              : `Services by ${profile.name} (${services.length})`}
-          </h2>
           {canEdit && (
-            <Link to="/services/new" className="link-add-service">
-              + Post New Service
-            </Link>
+            <div className="profile-header-actions">
+              <Link
+                to={`/users/${profile.user_id}/edit`}
+                className="btn-profile-action btn-edit-profile"
+              >
+                ✏️ Edit Profile
+              </Link>
+              {isOwnProfile && (
+                <Link
+                  to={`/users/${profile.user_id}/requests`}
+                  className="btn-profile-action btn-my-requests"
+                >
+                  📋 My Requests
+                </Link>
+              )}
+              <Link
+                to="/services/new"
+                className="btn-profile-action btn-add-service-primary"
+              >
+                ➕ Post Service
+              </Link>
+            </div>
           )}
         </div>
 
-        {services.length === 0 ? (
-          <div className="empty-services-card">
-            <p>
-              {isOwnProfile
-                ? "You haven't posted any services yet."
-                : "This user hasn't posted any services yet."}
-            </p>
-            {canEdit && (
-              <Link to="/services/new" className="btn-create-first">
-                + Post Your First Service
-              </Link>
+        {/* Two-Column Content Grid */}
+        <div className="profile-content-grid">
+          {/* Left Column: Bio, Contact, Socials */}
+          <aside className="profile-sidebar">
+            {/* Bio Card */}
+            <div className="sidebar-card bio-card">
+              <h3 className="sidebar-card-title">About</h3>
+              {profile.bio ? (
+                <p className="profile-bio-text">{profile.bio}</p>
+              ) : (
+                <p className="profile-bio-placeholder">
+                  {isOwnProfile
+                    ? "Add a short bio to introduce yourself and your services to potential clients."
+                    : "This user hasn't written a bio yet."}
+                </p>
+              )}
+              {isOwnProfile && !profile.bio && (
+                <Link to={`/users/${profile.user_id}/edit`} className="link-inline-action">
+                  + Add Bio
+                </Link>
+              )}
+            </div>
+
+            {/* Contact Details Card */}
+            <div className="sidebar-card contact-card">
+              <h3 className="sidebar-card-title">Contact Information</h3>
+              <div className="contact-list">
+                {profile.email && (
+                  <div className="contact-row">
+                    <span className="contact-icon">✉️</span>
+                    <div className="contact-text">
+                      <span className="contact-label">Email</span>
+                      <a href={`mailto:${profile.email}`} className="contact-value link-highlight">
+                        {profile.email}
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                {profile.phone && (
+                  <div className="contact-row">
+                    <span className="contact-icon">📞</span>
+                    <div className="contact-text">
+                      <span className="contact-label">Phone</span>
+                      <a href={`tel:${profile.phone}`} className="contact-value link-highlight">
+                        {profile.phone}
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                {profile.location && (
+                  <div className="contact-row">
+                    <span className="contact-icon">📍</span>
+                    <div className="contact-text">
+                      <span className="contact-label">Location</span>
+                      <span className="contact-value">{profile.location}</span>
+                    </div>
+                  </div>
+                )}
+
+                {profile.website && (
+                  <div className="contact-row">
+                    <span className="contact-icon">🌐</span>
+                    <div className="contact-text">
+                      <span className="contact-label">Website</span>
+                      <a
+                        href={
+                          profile.website.startsWith("http")
+                            ? profile.website
+                            : `https://${profile.website}`
+                        }
+                        target="_blank"
+                        rel="noreferrer"
+                        className="contact-value link-highlight"
+                      >
+                        {profile.website.replace(/^https?:\/\//i, "")}
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                {!profile.email && !profile.phone && !profile.website && !profile.location && (
+                  <p className="empty-info-note">No public contact info provided.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Social Links Card */}
+            {profile.social_links?.length > 0 && (
+              <div className="sidebar-card socials-card">
+                <h3 className="sidebar-card-title">Social Links</h3>
+                <div className="social-badges-container">
+                  {profile.social_links.map((social) => (
+                    <a
+                      key={social.id}
+                      href={social.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="social-pill-btn"
+                    >
+                      <span className="social-pill-icon">🔗</span>
+                      <span className="social-pill-platform">{social.platform}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
             )}
-          </div>
-        ) : (
-          <div className="services-grid">
-            {services.map((service) => (
-              <ServiceCard
-                key={service.id}
-                service={service}
-                isOwner={canEdit}
-                onDelete={handleDeleteService}
-                onUpdate={handleServiceUpdated}
-              />
-            ))}
-          </div>
-        )}
-      </section>
-    </main>
+          </aside>
+
+          {/* Right Column: Services List */}
+          <main className="profile-main-body">
+            <div className="services-section-wrapper">
+              <div className="services-section-header">
+                <div className="services-title-group">
+                  <h2>
+                    {isOwnProfile ? "My Services" : `Services by ${profile.name}`}
+                  </h2>
+                  <span className="services-count-badge">
+                    {services.length}
+                  </span>
+                </div>
+
+                {canEdit && (
+                  <Link to="/services/new" className="btn-post-service-secondary">
+                    + Post New Service
+                  </Link>
+                )}
+              </div>
+
+              {services.length > 0 && (
+                <div className="services-filter-bar">
+                  <div className="search-input-wrapper">
+                    <span className="search-icon">🔍</span>
+                    <input
+                      type="text"
+                      placeholder="Search within this provider's services..."
+                      value={serviceSearch}
+                      onChange={(e) => setServiceSearch(e.target.value)}
+                      className="service-search-input"
+                    />
+                    {serviceSearch && (
+                      <button
+                        type="button"
+                        onClick={() => setServiceSearch("")}
+                        className="clear-search-btn"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {services.length === 0 ? (
+                <div className="empty-services-state">
+                  <div className="empty-icon-wrap">🛠️</div>
+                  <h3>No services listed yet</h3>
+                  <p>
+                    {isOwnProfile
+                      ? "You haven't published any services on the marketplace yet. Create one now to start receiving requests!"
+                      : `${profile.name} hasn't listed any services on the marketplace yet.`}
+                  </p>
+                  {canEdit && (
+                    <Link to="/services/new" className="btn-cta-primary">
+                      + Create First Service
+                    </Link>
+                  )}
+                </div>
+              ) : filteredServices.length === 0 ? (
+                <div className="empty-services-state no-search-matches">
+                  <div className="empty-icon-wrap">🔎</div>
+                  <h3>No matching services</h3>
+                  <p>No services matched your search term "{serviceSearch}".</p>
+                  <button
+                    type="button"
+                    onClick={() => setServiceSearch("")}
+                    className="btn-reset-search"
+                  >
+                    Clear Filter
+                  </button>
+                </div>
+              ) : (
+                <div className="profile-services-grid">
+                  {filteredServices.map((service) => (
+                    <ServiceCard
+                      key={service.id}
+                      service={service}
+                      isOwner={canEdit}
+                      onDelete={handleDeleteService}
+                      onUpdate={handleServiceUpdated}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
   );
 };
 
