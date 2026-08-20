@@ -12,7 +12,6 @@ const CreateService = () => {
 
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
-    user_id: currentUserId || "",
     category_id: "",
     title: "",
     description: "",
@@ -113,7 +112,6 @@ const CreateService = () => {
       setError("");
 
       const data = new FormData();
-      data.append("user_id", formData.user_id);
       data.append("category_id", formData.category_id);
       data.append("title", formData.title);
       data.append("description", formData.description);
@@ -141,18 +139,6 @@ const CreateService = () => {
       {error && <p className="form-error">{error}</p>}
 
       <form onSubmit={handleSubmit} className="create-service-form">
-        <div className="form-group">
-          <label htmlFor="user_id">User ID</label>
-          <input
-            id="user_id"
-            name="user_id"
-            type="number"
-            value={formData.user_id}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
         <div className="form-group">
           <label htmlFor="title">Service Title</label>
           <input

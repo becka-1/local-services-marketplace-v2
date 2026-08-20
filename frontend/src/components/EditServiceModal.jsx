@@ -171,14 +171,13 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
       if (imagesToDelete.length > 0) {
         await Promise.all(
           imagesToDelete.map((imageId) =>
-            deleteServiceImage(serviceId, imageId, formData.user_id)
+            deleteServiceImage(serviceId, imageId)
           )
         );
       }
 
       // 2. Upload new data & new images
       const data = new FormData();
-      data.append("user_id", formData.user_id);
       data.append("category_id", formData.category_id);
       data.append("title", formData.title);
       data.append("description", formData.description);

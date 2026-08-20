@@ -8,7 +8,6 @@ import "./RequestServiceModal.css";
 const RequestServiceModal = ({ isOpen, onClose, service }) => {
   const navigate = useNavigate();
   const { currentUserId } = useUser();
-  const [requesterId, setRequesterId] = useState(currentUserId || "");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -21,7 +20,6 @@ const RequestServiceModal = ({ isOpen, onClose, service }) => {
       setSuccess(false);
       setMessage("");
       setCreatedRequestId(null);
-      setRequesterId(currentUserId || "");
     }
   }, [isOpen, currentUserId]);
 
@@ -39,8 +37,8 @@ const RequestServiceModal = ({ isOpen, onClose, service }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!requesterId || !message.trim()) {
-      setError("Please enter your User ID and a message.");
+    if (!message.trim()) {
+      setError("Please enter a message.");
       return;
     }
 
@@ -49,7 +47,6 @@ const RequestServiceModal = ({ isOpen, onClose, service }) => {
       setError("");
       const response = await createRequest({
         service_id: service.id,
-        requester_id: Number(requesterId),
         message: message.trim(),
       });
 
@@ -67,8 +64,8 @@ const RequestServiceModal = ({ isOpen, onClose, service }) => {
 
   const handleViewRequests = () => {
     onClose();
-    if (requesterId) {
-      navigate(`/users/${requesterId}/requests`);
+    if (currentUserId) {
+      navigate(`/users/${currentUserId}/requests`);
     } else {
       navigate("/services");
     }
@@ -116,22 +113,7 @@ const RequestServiceModal = ({ isOpen, onClose, service }) => {
             <form onSubmit={handleSubmit} className="modal-form">
               {error && <div className="modal-error">{error}</div>}
 
-              <div className="form-group">
-                <label htmlFor="requesterId">
-                  Your User ID <span className="label-tag">Temporary Auth</span>
-                </label>
-                <input
-                  id="requesterId"
-                  type="number"
-                  placeholder="e.g. 1, 2, 3..."
-                  value={requesterId}
-                  onChange={(e) => setRequesterId(e.target.value)}
-                  required
-                  min="1"
-                  autoFocus
-                />
-                <small className="form-hint">Enter the ID of the user requesting this service.</small>
-              </div>
+
 
               <div className="form-group">
                 <label htmlFor="requestMessage">Message to Provider</label>

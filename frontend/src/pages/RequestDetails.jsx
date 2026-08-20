@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router";
 import { getRequestById, updateRequest, deleteRequest } from "../services/requestApi.js";
+import { useUser } from "../context/UserContext.jsx";
 import ServiceDetailsModal from "../components/ServiceDetailsModal.jsx";
 import './RequestDetails.css';
 
@@ -12,7 +13,8 @@ const RequestDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [viewerId, setViewerId] = useState(""); // Temporary auth
+  const { currentUserId, currentUser } = useUser();
+  const isAdmin = currentUser?.role === 'admin';
   const [statusUpdate, setStatusUpdate] = useState("");
   const [updating, setUpdating] = useState(false);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
@@ -65,7 +67,7 @@ const RequestDetails = () => {
 
     try {
       await deleteRequest(id);
-      navigate(`/users/${viewerId}/requests`);
+      navigate(`/users/${currentUserId}/requests`);
     } catch (err) {
       alert("Failed to delete request.");
     }
@@ -74,25 +76,9 @@ const RequestDetails = () => {
   if (loading) return <p>Loading request...</p>;
   if (error) return <p>{error}</p>;
 
-  const isRequester = Number(viewerId) === Number(request.requester_id);
-  const isProvider = Number(viewerId) === Number(request.provider_id);
-
   return (
     <main className="request-details-page">
-      <Link to={viewerId ? `/users/${viewerId}/requests` : "/services"}>← Back</Link>
-      
-      <div className="auth-simulation">
-        <label>Simulate logged-in User ID: </label>
-        <input 
-          type="number" 
-          value={viewerId} 
-          onChange={(e) => setViewerId(e.target.value)}
-          placeholder="Enter ID"
-        />
-        <p className="auth-hint">
-          <small>(Enter <strong>{request.requester_id}</strong> to view as requester, or <strong>{request.provider_id}</strong> to view as provider)</small>
-        </p>
-      </div>
+      <Link to={currentUserId ? `/users/${currentUserId}/requests` : "/services"}>← Back</Link>
 
       <section className="details-card">
         <h1>Request Details</h1>
@@ -129,7 +115,7 @@ const RequestDetails = () => {
         </div>
       </section>
 
-      {isRequester && request.status === 'pending' && (
+      {(Number(currentUserId) === Number(request.requester_id) || isAdmin) && request.status === 'pending' && (
         <section className="actions-section">
           <h3>Requester Actions</h3>
           <div className="action-buttons">
@@ -140,7 +126,7 @@ const RequestDetails = () => {
         </section>
       )}
 
-      {isProvider && (
+      {(Number(currentUserId) === Number(request.provider_id) || isAdmin) && (
         <section className="actions-section">
           <h3>Provider Actions</h3>
           <div className="status-update-form">
