@@ -106,6 +106,20 @@ const InlineEdit = ({ value, label, name, type = "text", isEditing, onChange, mu
   );
 };
 
+const getSocialIcon = (platform) => {
+  switch (platform?.toLowerCase()) {
+    case 'github': return <i className="fa-brands fa-github"></i>;
+    case 'linkedin': return <i className="fa-brands fa-linkedin"></i>;
+    case 'instagram': return <i className="fa-brands fa-instagram"></i>;
+    case 'facebook': return <i className="fa-brands fa-facebook"></i>;
+    case 'x':
+    case 'twitter': return <i className="fa-brands fa-x-twitter"></i>;
+    case 'youtube': return <i className="fa-brands fa-youtube"></i>;
+    case 'portfolio': return <i className="fa-solid fa-globe"></i>;
+    default: return <i className="fa-solid fa-link"></i>;
+  }
+};
+
 const UserProfile = () => {
   const { id } = useParams();
   const { currentUserId, currentUser } = useUser();
@@ -265,22 +279,56 @@ const UserProfile = () => {
     }
   };
 
+  const handlePlatformChange = (selectedPlatform) => {
+    setSocialPlatform(selectedPlatform);
+    if (!selectedPlatform) {
+      setSocialUrl("");
+      return;
+    }
+    const existing = profile?.social_links?.find(
+      (s) => s.platform?.toLowerCase() === selectedPlatform.toLowerCase()
+    );
+    if (existing) {
+      setSocialUrl(existing.url);
+    }
+  };
+
+  const handleEditSocialLink = (social) => {
+    setSocialPlatform(social.platform);
+    setSocialUrl(social.url);
+    setShowSocialForm(true);
+  };
+
   const handleAddSocialLink = async (e) => {
     e.preventDefault();
     if (!socialPlatform || !socialUrl) return;
 
     try {
       const data = await addSocialLink(id, { platform: socialPlatform, url: socialUrl });
-      setProfile(prev => ({
-        ...prev,
-        social_links: [...(prev.social_links || []), data.social_link],
-      }));
+      const savedLink = data.social_link;
+      setProfile(prev => {
+        const existingLinks = prev.social_links || [];
+        const index = existingLinks.findIndex(
+          s => s.platform?.toLowerCase() === savedLink.platform?.toLowerCase() || s.id === savedLink.id
+        );
+        let updatedLinks;
+        if (index >= 0) {
+          updatedLinks = [...existingLinks];
+          updatedLinks[index] = savedLink;
+        } else {
+          updatedLinks = [...existingLinks, savedLink];
+        }
+        return {
+          ...prev,
+          social_links: updatedLinks,
+        };
+      });
       setSocialPlatform("");
       setSocialUrl("");
       setShowSocialForm(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to add social link.");
+      alert("Failed to save social link.");
     }
   };
 
@@ -593,9 +641,20 @@ const UserProfile = () => {
                         target="_blank"
                         rel="noreferrer"
                         className="social-pill-btn"
+                        title={
+                          canEdit
+                            ? `Click to edit ${social.platform ? social.platform.charAt(0).toUpperCase() + social.platform.slice(1) : "Social"} link`
+                            : social.platform ? social.platform.charAt(0).toUpperCase() + social.platform.slice(1) : "Social Link"
+                        }
+                        aria-label={social.platform}
+                        onClick={(e) => {
+                          if (canEdit) {
+                            e.preventDefault();
+                            handleEditSocialLink(social);
+                          }
+                        }}
                       >
-                        <span className="social-pill-icon"><i className="fa-solid fa-link"></i></span>
-                        <span className="social-pill-platform">{social.platform}</span>
+                        <span className="social-pill-icon">{getSocialIcon(social.platform)}</span>
                       </a>
                       {canEdit && (
                         <button 
@@ -610,8 +669,15 @@ const UserProfile = () => {
                   ))}
                   
                   {canEdit && !showSocialForm && (
-                    <button className="add-social-btn" onClick={() => setShowSocialForm(true)}>
-                      + Add Link
+                    <button
+                      className="add-social-btn"
+                      onClick={() => {
+                        setSocialPlatform("");
+                        setSocialUrl("");
+                        setShowSocialForm(true);
+                      }}
+                    >
+                      <i className="fa-solid fa-plus"></i> Add Link
                     </button>
                   )}
                 </div>
@@ -620,17 +686,17 @@ const UserProfile = () => {
                   <form onSubmit={handleAddSocialLink} className="inline-social-form">
                     <select 
                       value={socialPlatform} 
-                      onChange={e => setSocialPlatform(e.target.value)}
+                      onChange={e => handlePlatformChange(e.target.value)}
                       required
                     >
                       <option value="">Select Platform...</option>
-                      <option value="github">GitHub</option>
-                      <option value="linkedin">LinkedIn</option>
-                      <option value="instagram">Instagram</option>
-                      <option value="facebook">Facebook</option>
-                      <option value="x">X / Twitter</option>
-                      <option value="youtube">YouTube</option>
-                      <option value="portfolio">Portfolio / Website</option>
+                      <option value="github">GitHub {profile?.social_links?.some(s => s.platform?.toLowerCase() === 'github') ? '(Already added)' : ''}</option>
+                      <option value="linkedin">LinkedIn {profile?.social_links?.some(s => s.platform?.toLowerCase() === 'linkedin') ? '(Already added)' : ''}</option>
+                      <option value="instagram">Instagram {profile?.social_links?.some(s => s.platform?.toLowerCase() === 'instagram') ? '(Already added)' : ''}</option>
+                      <option value="facebook">Facebook {profile?.social_links?.some(s => s.platform?.toLowerCase() === 'facebook') ? '(Already added)' : ''}</option>
+                      <option value="x">X / Twitter {profile?.social_links?.some(s => s.platform?.toLowerCase() === 'x') ? '(Already added)' : ''}</option>
+                      <option value="youtube">YouTube {profile?.social_links?.some(s => s.platform?.toLowerCase() === 'youtube') ? '(Already added)' : ''}</option>
+                      <option value="portfolio">Portfolio / Website {profile?.social_links?.some(s => s.platform?.toLowerCase() === 'portfolio') ? '(Already added)' : ''}</option>
                     </select>
                     <input 
                       type="url" 
@@ -640,8 +706,22 @@ const UserProfile = () => {
                       required
                     />
                     <div className="social-form-actions">
-                      <button type="button" onClick={() => setShowSocialForm(false)} className="btn-cancel-social">Cancel</button>
-                      <button type="submit" className="btn-save-social">Add</button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSocialPlatform("");
+                          setSocialUrl("");
+                          setShowSocialForm(false);
+                        }}
+                        className="btn-cancel-social"
+                      >
+                        Cancel
+                      </button>
+                      <button type="submit" className="btn-save-social">
+                        {profile?.social_links?.some(s => s.platform?.toLowerCase() === socialPlatform?.toLowerCase())
+                          ? "Update"
+                          : "Add"}
+                      </button>
                     </div>
                   </form>
                 )}

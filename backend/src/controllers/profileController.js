@@ -301,29 +301,61 @@ export const addSocialLink = async (
       });
     }
 
-    const result = await db.query(
+    const trimmedPlatform = platform.trim();
+    const trimmedUrl = url.trim();
+
+    // Check if link for this platform already exists for this user
+    const existing = await db.query(
       `
-      INSERT INTO profile_social_links (
-        user_id,
-        platform,
-        url
-      )
-      VALUES ($1, $2, $3)
-      RETURNING
-        id,
-        platform,
-        url;
+      SELECT id FROM profile_social_links
+      WHERE user_id = $1 AND LOWER(platform) = LOWER($2)
       `,
-      [
-        id,
-        platform.trim(),
-        url.trim(),
-      ]
+      [Number(id), trimmedPlatform]
     );
 
-    res.status(201).json({
+    let result;
+    if (existing.rows.length > 0) {
+      result = await db.query(
+        `
+        UPDATE profile_social_links
+        SET
+          url = $1,
+          platform = $2
+        WHERE id = $3 AND user_id = $4
+        RETURNING
+          id,
+          platform,
+          url;
+        `,
+        [trimmedUrl, trimmedPlatform, existing.rows[0].id, Number(id)]
+      );
+    } else {
+      result = await db.query(
+        `
+        INSERT INTO profile_social_links (
+          user_id,
+          platform,
+          url
+        )
+        VALUES ($1, $2, $3)
+        RETURNING
+          id,
+          platform,
+          url;
+        `,
+        [
+          Number(id),
+          trimmedPlatform,
+          trimmedUrl,
+        ]
+      );
+    }
+
+    res.status(200).json({
       message:
-        "Social link added successfully.",
+        existing.rows.length > 0
+          ? "Social link updated successfully."
+          : "Social link added successfully.",
       social_link: result.rows[0],
     });
   } catch (error) {
@@ -331,7 +363,7 @@ export const addSocialLink = async (
 
     res.status(500).json({
       message:
-        "Failed to add social link.",
+        "Failed to save social link.",
     });
   }
 };
