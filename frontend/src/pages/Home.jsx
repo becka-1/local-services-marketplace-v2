@@ -64,10 +64,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <div className="hero-visual">
-          <div className="hero-shape shape-1"></div>
-          <div className="hero-shape shape-2"></div>
-        </div>
+
       </section>
 
       {/* How it Works Section */}
