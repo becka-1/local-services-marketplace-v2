@@ -28,18 +28,40 @@ const Home = () => {
       <section className="hero-section">
         <div className="hero-content">
           <h1 className="hero-title">
-            Your Local Needs, <span className="text-gradient">Met Here.</span>
+            A marketplace but for <span className="text-gradient">services</span>
           </h1>
           <p className="hero-subtitle">
             Connect with skilled professionals in your community for any task, or offer your own expertise and start earning today.
           </p>
-          <div className="hero-buttons">
-            <button className="btn-primary-large" onClick={() => navigate('/services')}>
-              Find a Service
-            </button>
-            <button className="btn-secondary-large" onClick={() => navigate('/services/new')}>
-              Offer a Service
-            </button>
+
+          <form className="hero-search-form" onSubmit={(e) => {
+            e.preventDefault();
+            const val = e.target.elements.search.value;
+            if(val) navigate(`/services?search=${encodeURIComponent(val)}`);
+            else navigate('/services');
+          }}>
+            <div className="hero-search-box">
+              <input name="search" type="text" placeholder="What service do you need today?" className="hero-search-input" />
+              <button type="submit" className="btn-search">Search</button>
+            </div>
+          </form>
+
+          <div className="hero-actions-container">
+            <div className="hand-drawn-callout">
+              <span className="hand-drawn-text">get yourself a service</span>
+              <svg className="hand-drawn-arrow" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* A playful swooping arrow pointing down-right */}
+                <path d="M10 20 C 40 0, 70 30, 90 70 M 90 70 L 70 70 M 90 70 L 85 50" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <div className="hero-buttons">
+              <button className="btn-primary-large" onClick={() => navigate('/services')}>
+                Find a Service
+              </button>
+              <button className="btn-secondary-large" onClick={() => navigate('/services/new')}>
+                Offer a Service
+              </button>
+            </div>
           </div>
         </div>
         <div className="hero-visual">

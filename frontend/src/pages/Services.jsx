@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { getServices } from '../services/serviceApi.js';
 import { getCategories } from '../services/categoryApi.js';
 import ServiceCard from '../components/ServiceCard.jsx';
 import './Services.css';
 
 const Services = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [services, setServices] = useState([]);
 
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
-  const [location, setLocation] = useState("");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
+  const [category, setCategory] = useState(searchParams.get("category") || "");
+  const [location, setLocation] = useState(searchParams.get("location") || "");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -34,20 +36,30 @@ const Services = () => {
   };
 
   useEffect(() => {
-    const init = async () => {
-      await loadServices();
-    };
-    init();
-  }, [])
+    const s = searchParams.get("search") || "";
+    const c = searchParams.get("category") || "";
+    const l = searchParams.get("location") || "";
+
+    setSearch(s);
+    setCategory(c);
+    setLocation(l);
+
+    loadServices({
+      search: s,
+      category: c,
+      location: l,
+    });
+  }, [searchParams]);
 
   const handleSearch = (event) => {
     event.preventDefault();
 
-    loadServices({
-      search,
-      category,
-      location,
-    });
+    const params = {};
+    if (search.trim()) params.search = search.trim();
+    if (category) params.category = category;
+    if (location.trim()) params.location = location.trim();
+
+    setSearchParams(params);
   };
 
   const loadCategories = async () => {
