@@ -14,7 +14,7 @@
 }
 
 .auth-modal-container {
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 16px;
   width: 100%;
   max-width: 420px;
@@ -30,38 +30,39 @@
   background: none;
   border: none;
   font-size: 24px;
-  color: #9ca3af;
+  color: var(--color-light-blue);
   cursor: pointer;
   transition: color 0.15s;
 }
 
 .auth-modal-close:hover {
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .auth-modal-container h2 {
   margin: 0;
   font-size: 24px;
-  color: #111827;
+  color: var(--color-text);
   font-weight: 700;
   margin-bottom: 8px;
 }
 
 .auth-modal-subtitle {
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-size: 14px;
   margin-top: 0;
   margin-bottom: 24px;
 }
 
 .auth-error {
-  background-color: #fee2e2;
-  color: #b91c1c;
+  background-color: var(--color-accent-orange);
+  color: var(--color-surface);
   padding: 10px 14px;
   border-radius: 8px;
   font-size: 14px;
   margin-bottom: 20px;
-  border: 1px solid #fca5a5;
+  border: 1px solid var(--color-accent-orange);
+  font-weight: 500;
 }
 
 .auth-form {
@@ -88,12 +89,12 @@
 .auth-form label {
   font-size: 13px;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-text);
 }
 
 .auth-form input {
   padding: 10px 14px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-light-blue);
   border-radius: 8px;
   font-size: 14px;
   transition: border-color 0.15s, box-shadow 0.15s;
@@ -101,7 +102,7 @@
 
 .auth-form input:focus {
   outline: none;
-  border-color: #007bff;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
 }
 
@@ -111,6 +112,15 @@
   font-size: 15px;
   font-weight: 600;
   border-radius: 8px;
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.auth-btn-submit:hover:not(:disabled) {
+  background-color: var(--color-dark);
 }
 
 .auth-btn-submit:disabled {
@@ -122,13 +132,13 @@
   margin-top: 24px;
   text-align: center;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--color-text-muted);
 }
 
 .btn-link {
   background: none;
   border: none;
-  color: #007bff;
+  color: var(--color-primary);
   font-weight: 600;
   cursor: pointer;
   padding: 0;

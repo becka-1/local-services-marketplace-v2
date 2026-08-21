@@ -32,7 +32,7 @@
 }
 
 .thumbnail.active {
-  border-color: #000;
+  border-color: var(--color-text);
 }
 
 .thumbnail img {

@@ -14,7 +14,7 @@
 }
 
 .cropper-modal-container {
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 14px;
   max-width: 680px;
   width: 100%;
@@ -32,7 +32,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-surface);
   padding-bottom: 12px;
 }
 
@@ -45,14 +45,14 @@
 .header-title-group h3 {
   margin: 0;
   font-size: 19px;
-  color: #111827;
+  color: var(--color-text);
 }
 
 .cropper-step-badge {
   font-size: 12px;
   font-weight: 600;
-  background-color: #e0f2fe;
-  color: #0369a1;
+  background-color: var(--color-light-blue);
+  color: var(--color-dark);
   padding: 3px 8px;
   border-radius: 12px;
 }
@@ -62,7 +62,7 @@
   border: none;
   font-size: 20px;
   line-height: 1;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 4px;
@@ -70,14 +70,14 @@
 }
 
 .cropper-close-btn:hover {
-  color: #111827;
-  background-color: #f3f4f6;
+  color: var(--color-text);
+  background-color: var(--color-surface);
 }
 
 .cropper-hint {
   margin: 0;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-text-muted);
 }
 
 .aspect-ratio-selector {
@@ -90,33 +90,33 @@
 .ratio-label {
   font-size: 13px;
   font-weight: 600;
-  color: #374151;
+  color: var(--color-text);
 }
 
 .ratio-btn {
-  background-color: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-light-blue);
   border-radius: 6px;
   padding: 5px 10px;
   font-size: 12px;
   font-weight: 500;
-  color: #4b5563;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .ratio-btn:hover {
-  background-color: #e5e7eb;
+  background-color: var(--color-light-blue);
 }
 
 .ratio-btn.active {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  border-color: var(--color-primary);
 }
 
 .crop-viewport-outer {
-  background-color: #18181b;
+  background-color: var(--color-text);
   border-radius: 10px;
   padding: 16px;
   display: flex;
@@ -132,7 +132,7 @@
   overflow: hidden;
   border-radius: 6px;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4), 0 10px 25px rgba(0, 0, 0, 0.5);
-  background-color: #09090b;
+  background-color: var(--color-text);
   user-select: none;
 }
 
@@ -195,9 +195,9 @@
   align-items: center;
   gap: 16px;
   padding: 10px 14px;
-  background-color: #f9fafb;
+  background-color: var(--color-surface-muted);
   border-radius: 8px;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--color-surface);
   flex-wrap: wrap;
 }
 
@@ -221,7 +221,7 @@
 .zoom-value {
   font-size: 12px;
   font-weight: 600;
-  color: #4b5563;
+  color: var(--color-text-muted);
   width: 42px;
 }
 
@@ -231,26 +231,26 @@
 }
 
 .tool-btn {
-  background: white;
-  border: 1px solid #d1d5db;
+  background: var(--color-surface);
+  border: 1px solid var(--color-light-blue);
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 12px;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-text);
   cursor: pointer;
   transition: background-color 0.15s;
 }
 
 .tool-btn:hover {
-  background-color: #f3f4f6;
+  background-color: var(--color-surface);
 }
 
 .cropper-modal-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--color-surface);
   padding-top: 14px;
 }
 
@@ -272,30 +272,31 @@
 
 .btn-cropper-cancel {
   background: none;
-  border: 1px solid #d1d5db;
-  color: #4b5563;
+  border: 1px solid var(--color-light-blue);
+  color: var(--color-text-muted);
 }
 
 .btn-cropper-cancel:hover {
-  background-color: #f3f4f6;
+  background-color: var(--color-surface);
 }
 
 .btn-cropper-skip {
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
-  color: #374151;
+  background: var(--color-surface);
+  border: 1px solid var(--color-light-blue);
+  color: var(--color-text);
 }
 
 .btn-cropper-skip:hover {
-  background-color: #e5e7eb;
+  background-color: var(--color-light-blue);
 }
 
 .btn-cropper-apply {
-  background-color: #007bff;
-  border: 1px solid #007bff;
-  color: white;
+  background-color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  color: var(--color-surface);
 }
 
 .btn-cropper-apply:hover {
-  background-color: #0056b3;
+  background-color: var(--color-dark);
+  border-color: var(--color-dark);
 }

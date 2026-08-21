@@ -8,8 +8,8 @@
 
   border-radius: 50%;
 
-  background: #ddd;
-
+  background: var(--color-light-blue);
+  color: var(--color-dark);
   font-weight: 600;
 }
 

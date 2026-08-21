@@ -19,7 +19,7 @@
   text-align: center;
   min-height: 85vh;
   padding: 0 5%;
-  background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+  background: var(--color-base);
   overflow: hidden;
 }
 
@@ -37,20 +37,17 @@
   font-size: 4rem;
   font-weight: 800;
   line-height: 1.1;
-  color: #0f172a;
+  color: var(--color-dark);
   margin-bottom: 24px;
 }
 
 .text-gradient {
-  background: linear-gradient(to right, #4f46e5, #3b82f6);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--color-primary);
 }
 
 .hero-subtitle {
   font-size: 1.25rem;
-  color: #475569;
+  color: var(--color-text-muted);
   line-height: 1.6;
   margin-bottom: 32px;
 }
@@ -64,17 +61,17 @@
 .hero-search-box {
   display: flex;
   align-items: center;
-  background: white;
+  background: var(--color-surface);
   border-radius: 99px;
   padding: 8px 8px 8px 24px;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-light-blue);
   transition: all 0.3s ease;
 }
 
 .hero-search-box:focus-within {
-  box-shadow: 0 10px 30px -5px rgba(79, 70, 229, 0.2);
-  border-color: #818cf8;
+  box-shadow: 0 10px 30px -5px var(--color-light-blue);
+  border-color: var(--color-primary);
 }
 
 .hero-search-input {
@@ -84,17 +81,17 @@
   padding: 12px 16px;
   font-size: 1.1rem;
   font-family: inherit;
-  color: #334155;
+  color: var(--color-text);
   outline: none;
 }
 
 .hero-search-input::placeholder {
-  color: #94a3b8;
+  color: var(--color-text-muted);
 }
 
 .btn-search {
-  background: #4f46e5;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-surface);
   border: none;
   border-radius: 99px;
   padding: 12px 28px;
@@ -105,7 +102,7 @@
 }
 
 .btn-search:hover {
-  background: #4338ca;
+  background: var(--color-dark);
 }
 
 .hero-actions-container {
@@ -129,7 +126,7 @@
   font-family: 'Caveat', 'Comic Sans MS', cursive;
   font-size: 1.4rem;
   font-weight: 700;
-  color: #4f46e5;
+  color: var(--color-accent-orange);
   margin-bottom: 5px;
   white-space: nowrap;
 }
@@ -137,7 +134,7 @@
 .hand-drawn-arrow {
   width: 70px;
   height: 70px;
-  color: #4f46e5;
+  color: var(--color-accent-orange);
   transform: rotate(25deg) translateY(-10px);
 }
 
@@ -160,26 +157,26 @@
 }
 
 .btn-primary-large {
-  background: #4f46e5;
-  color: white;
-  box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
+  background: var(--color-primary);
+  color: var(--color-surface);
+  box-shadow: 0 10px 20px -5px var(--color-light-blue);
 }
 
 .btn-primary-large:hover {
-  background: #4338ca;
+  background: var(--color-dark);
   transform: translateY(-2px);
-  box-shadow: 0 15px 25px -5px rgba(79, 70, 229, 0.5);
+  box-shadow: 0 15px 25px -5px var(--color-light-blue);
 }
 
 .btn-secondary-large {
-  background: white;
-  color: #4f46e5;
-  border: 2px solid #e0e7ff;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  border: 2px solid var(--color-light-blue);
 }
 
 .btn-secondary-large:hover {
-  background: #f8fafc;
-  border-color: #c7d2fe;
+  background: var(--color-surface-muted);
+  border-color: var(--color-primary);
   transform: translateY(-2px);
 }
 
@@ -203,7 +200,7 @@
 .shape-1 {
   width: 500px;
   height: 500px;
-  background: #60a5fa;
+  background: var(--color-light-blue);
   top: -100px;
   right: -100px;
 }
@@ -211,7 +208,7 @@
 .shape-2 {
   width: 400px;
   height: 400px;
-  background: #c084fc;
+  background: var(--color-accent-yellow);
   bottom: 10%;
   right: 20%;
 }
@@ -221,14 +218,14 @@
    ============================ */
 .how-it-works-section {
   padding: 100px 5%;
-  background: white;
+  background: var(--color-surface);
   text-align: center;
 }
 
 .section-title {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-text);
   margin-bottom: 60px;
 }
 
@@ -243,7 +240,7 @@
 .step-card {
   padding: 40px 24px;
   border-radius: 24px;
-  background: #f8fafc;
+  background: var(--color-surface-muted);
   transition: transform 0.3s ease;
 }
 
@@ -258,12 +255,12 @@
 
 .step-card h3 {
   font-size: 1.5rem;
-  color: #1e293b;
+  color: var(--color-text);
   margin-bottom: 16px;
 }
 
 .step-card p {
-  color: #64748b;
+  color: var(--color-text-muted);
   line-height: 1.6;
 }
 
@@ -272,7 +269,7 @@
    ============================ */
 .featured-section {
   padding: 100px 5%;
-  background: #f1f5f9;
+  background: var(--color-base);
 }
 
 .featured-header {
@@ -289,14 +286,14 @@
 
 .view-all-link {
   font-weight: 600;
-  color: #4f46e5;
+  color: var(--color-primary);
   text-decoration: none;
   font-size: 1.125rem;
   transition: color 0.2s;
 }
 
 .view-all-link:hover {
-  color: #3730a3;
+  color: var(--color-dark);
 }
 
 .featured-grid {
@@ -308,7 +305,7 @@
 }
 
 .featured-service-card {
-  background: white;
+  background: var(--color-surface);
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
@@ -327,7 +324,7 @@
   position: relative;
   height: 220px;
   width: 100%;
-  background: #e2e8f0;
+  background: var(--color-surface-muted);
   overflow: hidden;
 }
 
@@ -348,7 +345,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #94a3b8;
+  color: var(--color-text-muted);
   font-weight: 500;
 }
 
@@ -356,12 +353,12 @@
   position: absolute;
   bottom: 16px;
   right: 16px;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--color-surface);
   backdrop-filter: blur(4px);
   padding: 6px 12px;
   border-radius: 99px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-text);
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -376,7 +373,7 @@
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: #4f46e5;
+  color: var(--color-primary);
   letter-spacing: 0.05em;
   margin-bottom: 8px;
 }
@@ -384,13 +381,13 @@
 .card-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--color-text);
   margin: 0 0 12px 0;
   line-height: 1.4;
 }
 
 .card-provider, .card-location {
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 0.875rem;
   margin: 4px 0;
 }
@@ -399,10 +396,10 @@
    FOOTER CTA
    ============================ */
 .home-footer {
-  background: #0f172a;
+  background: var(--color-dark);
   padding: 100px 5%;
   text-align: center;
-  color: white;
+  color: var(--color-surface);
 }
 
 .footer-content {
@@ -418,7 +415,7 @@
 
 .footer-content p {
   font-size: 1.25rem;
-  color: #94a3b8;
+  color: var(--color-light-blue);
   margin-bottom: 40px;
 }
 
