@@ -1,3 +1,19 @@
+@font-face {
+  font-family: 'Ubuntu';
+  src: url('./assets/fonts/Ubuntu-Regular.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito Sans';
+  src: url('./assets/fonts/NunitoSans.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --color-base: #f7fbfc; /* Very light tint for backgrounds to ensure contrast */
   --color-surface: #ffffff; /* White for cards/elements to ensure contrast */
@@ -10,6 +26,9 @@
   
   --color-text: var(--color-dark);
   --color-text-muted: #10425c; /* Lighter shade of dark blue for secondary text */
+
+  --font-heading: 'Ubuntu', sans-serif;
+  --font-body: 'Nunito Sans', sans-serif;
 }
 
 * {
@@ -19,7 +38,17 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: var(--font-body);
   background: var(--color-base);
   color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+input, textarea, select, button {
+  font-family: inherit;
 }

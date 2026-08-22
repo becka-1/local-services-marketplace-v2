@@ -61,7 +61,6 @@ const Navbar = () => {
       <div className="navbar-container">
         {/* Brand / Logo */}
         <Link to="/" className="navbar-brand">
-          <span className="brand-icon"><i className="fa-solid fa-screwdriver-wrench"></i></span>
           <span className="brand-name">LocalServices</span>
         </Link>
 
