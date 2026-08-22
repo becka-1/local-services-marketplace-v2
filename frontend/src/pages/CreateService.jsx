@@ -21,6 +21,8 @@ const CreateService = () => {
 
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [selectedDefaultImages, setSelectedDefaultImages] = useState([]);
+  const defaultImagesList = ["1292797.jpg", "679478.jpg", "712437.jpg"];
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -65,8 +67,8 @@ const CreateService = () => {
     if (!event.target.files || event.target.files.length === 0) return;
     const selectedFiles = Array.from(event.target.files);
 
-    // Limit total images to 5
-    const remainingSlots = 5 - images.length;
+    // Limit total images (uploaded + default) to 5
+    const remainingSlots = 5 - (images.length + selectedDefaultImages.length);
     const filesToProcess = selectedFiles.slice(0, remainingSlots);
 
     if (filesToProcess.length > 0) {
@@ -105,6 +107,20 @@ const CreateService = () => {
     setImages((prev) => prev.filter((_, idx) => idx !== indexToRemove));
   };
 
+  const handleToggleDefaultImage = (filename) => {
+    setSelectedDefaultImages((prev) => {
+      if (prev.includes(filename)) {
+        return prev.filter((img) => img !== filename);
+      } else {
+        if (images.length + prev.length >= 5) {
+          alert("You can only select up to 5 images in total.");
+          return prev;
+        }
+        return [...prev, filename];
+      }
+    });
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -120,6 +136,10 @@ const CreateService = () => {
 
       images.forEach((image) => {
         data.append("images", image);
+      });
+      
+      selectedDefaultImages.forEach((img) => {
+        data.append("defaultImages", img);
       });
 
       await createService(data);
@@ -213,9 +233,9 @@ const CreateService = () => {
 
         {/* Service Images & Cropping */}
         <div className="form-group">
-          <label>Service Images ({images.length}/5) — Consistent Size</label>
+          <label>Service Images ({images.length + selectedDefaultImages.length}/5) — Consistent Size</label>
 
-          {images.length < 5 && (
+          {(images.length + selectedDefaultImages.length) < 5 && (
             <div className="file-input-wrapper">
               <label htmlFor="serviceImagesInput" className="file-input-label">
                 <span className="upload-icon"><i className="fa-solid fa-camera"></i></span>
@@ -232,6 +252,30 @@ const CreateService = () => {
               />
             </div>
           )}
+
+          {/* Default Images Selector */}
+          <div className="default-images-section">
+            <p className="default-images-label">Or choose from our default gallery:</p>
+            <div className="default-images-grid">
+              {defaultImagesList.map((filename) => {
+                const isSelected = selectedDefaultImages.includes(filename);
+                return (
+                  <div 
+                    key={filename} 
+                    className={`default-image-card ${isSelected ? 'selected' : ''}`}
+                    onClick={() => handleToggleDefaultImage(filename)}
+                  >
+                    <img src={`/default-service-images/${filename}`} alt="Default Service" />
+                    {isSelected && (
+                      <div className="default-image-checkmark">
+                        <i className="fa-solid fa-check"></i>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
           {images.length > 0 && (
             <div className="selected-images-grid">

@@ -16,6 +16,8 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
   const [imagesToDelete, setImagesToDelete] = useState([]);
   const [newImages, setNewImages] = useState([]);
   const [newImagePreviews, setNewImagePreviews] = useState([]);
+  const [selectedDefaultImages, setSelectedDefaultImages] = useState([]);
+  const defaultImagesList = ["1292797.jpg", "679478.jpg", "712437.jpg"];
 
   // Cropper state
   const [isCropperOpen, setIsCropperOpen] = useState(false);
@@ -45,6 +47,7 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
           setSuccess(false);
           setNewImages([]);
           setImagesToDelete([]);
+          setSelectedDefaultImages([]);
 
           const [service, categoryData, imageData] = await Promise.all([
             getServiceById(serviceId),
@@ -116,7 +119,8 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const selectedFiles = Array.from(e.target.files);
-      const remainingSlots = 5 - (existingImages.length - imagesToDelete.length + newImages.length);
+      const activeExistingCount = existingImages.length - imagesToDelete.length;
+      const remainingSlots = 5 - (activeExistingCount + newImages.length + selectedDefaultImages.length);
       const filesToProcess = selectedFiles.slice(0, Math.max(1, remainingSlots));
 
       if (filesToProcess.length > 0) {
@@ -161,6 +165,21 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
     );
   };
 
+  const handleToggleDefaultImage = (filename) => {
+    setSelectedDefaultImages((prev) => {
+      if (prev.includes(filename)) {
+        return prev.filter((img) => img !== filename);
+      } else {
+        const activeExistingCount = existingImages.length - imagesToDelete.length;
+        if (activeExistingCount + newImages.length + prev.length >= 5) {
+          alert("You can only have up to 5 images in total.");
+          return prev;
+        }
+        return [...prev, filename];
+      }
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -186,6 +205,10 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
 
       newImages.forEach((img) => {
         data.append("images", img);
+      });
+
+      selectedDefaultImages.forEach((img) => {
+        data.append("defaultImages", img);
       });
 
       const updated = await updateService(serviceId, data);
@@ -327,11 +350,11 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
                     )}
                   </label>
                   <div className="edit-modal-images-grid">
-                    {existingImages.map((img) => {
+                    {existingImages.map((img, idx) => {
                       const isMarked = imagesToDelete.includes(img.id);
                       return (
                         <div
-                          key={img.id}
+                          key={img.id || `existing-${idx}`}
                           className={`edit-image-thumbnail ${
                             isMarked ? "marked-for-deletion" : ""
                           }`}
@@ -425,6 +448,30 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
                 <small className="form-hint">
                   Uploaded images will open in the cropper to maintain uniform sizes.
                 </small>
+              </div>
+
+              {/* Default Images Selector */}
+              <div className="default-images-section">
+                <p className="default-images-label">Or choose from our default gallery:</p>
+                <div className="default-images-grid">
+                  {defaultImagesList.map((filename) => {
+                    const isSelected = selectedDefaultImages.includes(filename);
+                    return (
+                      <div 
+                        key={filename} 
+                        className={`default-image-card ${isSelected ? 'selected' : ''}`}
+                        onClick={() => handleToggleDefaultImage(filename)}
+                      >
+                        <img src={`/default-service-images/${filename}`} alt="Default Service" />
+                        {isSelected && (
+                          <div className="default-image-checkmark">
+                            <i className="fa-solid fa-check"></i>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
               <div className="edit-modal-actions">

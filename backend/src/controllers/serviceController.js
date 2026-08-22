@@ -1,4 +1,6 @@
 import db from "../db/db.js";
+import fs from "fs";
+import path from "path";
 
 export const getAllServices = async (req, res) => {
   try {
@@ -148,6 +150,7 @@ export const createService = async (req, res) => {
       description,
       price,
       location,
+      defaultImages,
     } = req.body;
 
     const user_id = req.user.id;
@@ -213,6 +216,38 @@ export const createService = async (req, res) => {
             file.mimetype,
           ]
         );
+      }
+    }
+
+    // Save default images
+    if (defaultImages) {
+      const defaultImagesArray = Array.isArray(defaultImages) ? defaultImages : [defaultImages];
+      for (const filename of defaultImagesArray) {
+        try {
+          // Construct path to the frontend public folder
+          const imagePath = path.join(process.cwd(), '../frontend/public/default-service-images', filename);
+          const buffer = fs.readFileSync(imagePath);
+          const mimeType = filename.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
+          
+          await client.query(
+            `
+            INSERT INTO service_images (
+              service_id,
+              image_data,
+              mime_type
+            )
+            VALUES ($1, $2, $3);
+            `,
+            [
+              service.id,
+              buffer,
+              mimeType,
+            ]
+          );
+        } catch (err) {
+          console.error("Failed to save default image:", filename, err);
+          // We continue so the service is still created even if one image fails
+        }
       }
     }
 
@@ -313,6 +348,7 @@ export const updateService = async (req, res) => {
       description,
       price,
       location,
+      defaultImages,
     } = req.body;
 
     if (!category_id || !title || !description) {
@@ -403,6 +439,36 @@ export const updateService = async (req, res) => {
       }
     }
 
+    // Add newly selected default images
+    if (defaultImages) {
+      const defaultImagesArray = Array.isArray(defaultImages) ? defaultImages : [defaultImages];
+      for (const filename of defaultImagesArray) {
+        try {
+          const imagePath = path.join(process.cwd(), '../frontend/public/default-service-images', filename);
+          const buffer = fs.readFileSync(imagePath);
+          const mimeType = filename.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
+          
+          await client.query(
+            `
+            INSERT INTO service_images (
+              service_id,
+              image_data,
+              mime_type
+            )
+            VALUES ($1, $2, $3);
+            `,
+            [
+              id,
+              buffer,
+              mimeType,
+            ]
+          );
+        } catch (err) {
+          console.error("Failed to save default image:", filename, err);
+        }
+      }
+    }
+
     await client.query("COMMIT");
 
     res.json({
@@ -472,7 +538,6 @@ export const deleteService = async (req, res) => {
 export const deleteServiceImage = async (req, res) => {
   try {
     const { id, imageId } = req.params;
-    const { user_id } = req.body;
 
     const serviceResult = await db.query(
       `
