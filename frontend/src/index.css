@@ -15,6 +15,9 @@
 }
 
 :root {
+  /* Keeps default browser settings intact for accessibility */
+  font-size: 100%;
+
   --color-base: #f7fbfc; /* Very light tint for backgrounds to ensure contrast */
   --color-surface: #ffffff; /* White for cards/elements to ensure contrast */
   --color-surface-muted: #e6f1f5; /* Muted surface matching the palette */
@@ -29,12 +32,28 @@
 
   --font-heading: 'Ubuntu', sans-serif;
   --font-body: 'Nunito Sans', sans-serif;
+
+  /* Fluid Typography Variables */
+  --fs-h1: clamp(2.25rem, 3vw + 1.5rem, 4rem);
+  --fs-h2: clamp(1.75rem, 2vw + 1.25rem, 2.75rem);
+  --fs-h3: clamp(1.5rem, 1.5vw + 1.1rem, 2.25rem);
+  --fs-h4: clamp(1.25rem, 1vw + 1rem, 1.75rem);
+  --fs-h5: clamp(1.1rem, 0.8vw + 0.9rem, 1.4rem);
+  --fs-h6: clamp(1rem, 0.5vw + 0.8rem, 1.15rem);
+  --fs-body: clamp(1rem, 0.3vw + 0.9rem, 1.15rem);
+  --fs-ui: clamp(0.95rem, 0.2vw + 0.85rem, 1.05rem);
+  --fs-small: clamp(0.8rem, 0.1vw + 0.75rem, 0.9rem);
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+body, p, li {
+  font-size: var(--fs-body);
+  line-height: 1.6;
 }
 
 body {
@@ -47,8 +66,25 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
+  line-height: 1.2;
 }
 
-input, textarea, select, button {
+h1 { font-size: var(--fs-h1); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
+h4 { font-size: var(--fs-h4); }
+h5 { font-size: var(--fs-h5); }
+h6 { font-size: var(--fs-h6); }
+
+blockquote {
+  font-size: var(--fs-h5);
+}
+
+button, input, textarea, select, label {
+  font-size: var(--fs-ui);
   font-family: inherit;
+}
+
+small, figcaption, time {
+  font-size: var(--fs-small);
 }
