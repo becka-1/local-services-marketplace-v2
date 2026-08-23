@@ -1,4 +1,9 @@
 import db from '../db/db.js';
+import { sendVerificationEmail } from '../services/emailService.js';
+
+// In-memory store for OTPs
+// Structure: { [userId_type]: { code: '123456', expiresAt: 1234567890 } }
+const otpStore = new Map();
 
 export const getProfile = async (req, res) => {
   try {
@@ -16,6 +21,8 @@ export const getProfile = async (req, res) => {
         profiles.bio,
         profiles.location,
         profiles.website,
+        profiles.email_verified,
+        profiles.phone_verified,
 
         CASE
           WHEN profiles.profile_picture IS NOT NULL
@@ -158,6 +165,14 @@ export const updateProfile = async (req, res) => {
 
     await client.query("BEGIN");
 
+    // Fetch existing to check if email/phone changed
+    const existingResult = await client.query('SELECT email, phone FROM profiles WHERE user_id = $1', [id]);
+    const existing = existingResult.rows[0];
+
+    // If they changed, we should reset their verification status
+    const resetEmailVerified = existing && existing.email !== (email?.trim() || null);
+    const resetPhoneVerified = existing && existing.phone !== phone.trim();
+
     const profileResult = await client.query(
       `
       UPDATE profiles
@@ -168,6 +183,8 @@ export const updateProfile = async (req, res) => {
         email = $4,
         location = $5,
         website = $6,
+        email_verified = CASE WHEN $8::boolean THEN false ELSE email_verified END,
+        phone_verified = CASE WHEN $9::boolean THEN false ELSE phone_verified END,
         updated_at = CURRENT_TIMESTAMP
       WHERE user_id = $7
       RETURNING
@@ -178,6 +195,8 @@ export const updateProfile = async (req, res) => {
         email,
         location,
         website,
+        email_verified,
+        phone_verified,
         created_at,
         updated_at;
       `,
@@ -189,6 +208,8 @@ export const updateProfile = async (req, res) => {
         location?.trim() || null,
         website?.trim() || null,
         id,
+        resetEmailVerified,
+        resetPhoneVerified
       ]
     );
 
@@ -409,3 +430,102 @@ export const deleteSocialLink = async (
     });
   }
 };
+
+// --- Verification Logic ---
+
+export const requestVerification = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { type } = req.body; // 'email'
+
+    if (Number(id) !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Forbidden." });
+    }
+
+    if (type !== 'email') {
+      return res.status(400).json({ message: "Invalid verification type. Only email is supported." });
+    }
+
+    // Get user's email to send the code to
+    const profileResult = await db.query('SELECT email FROM profiles WHERE user_id = $1', [id]);
+    if (profileResult.rows.length === 0) {
+      return res.status(404).json({ message: "Profile not found." });
+    }
+    
+    const targetEmail = profileResult.rows[0].email;
+    if (!targetEmail) {
+      return res.status(400).json({ message: "No email address on profile to send verification code." });
+    }
+
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(targetEmail)) {
+      return res.status(400).json({ message: "The email address on your profile is invalid. Please update it first." });
+    }
+
+    console.log("targetEmail is:", targetEmail, "Type:", typeof targetEmail);
+
+    // Generate 6-digit OTP
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    // Store OTP in memory
+    const storeKey = `${id}_${type}`;
+    otpStore.set(storeKey, { code, expiresAt });
+
+    // Send email
+    const emailSent = await sendVerificationEmail(targetEmail, code, type);
+    
+    if (!emailSent) {
+      return res.status(500).json({ message: "Failed to send verification email." });
+    }
+
+    res.json({ message: "Verification code sent successfully." });
+  } catch (error) {
+    console.error("requestVerification error:", error);
+    res.status(500).json({ message: "Failed to request verification." });
+  }
+};
+
+export const verifyCode = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { type, code } = req.body;
+
+    if (Number(id) !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Forbidden." });
+    }
+
+    const storeKey = `${id}_${type}`;
+    const storedData = otpStore.get(storeKey);
+
+    if (!storedData) {
+      return res.status(400).json({ message: "No verification request found or it has expired." });
+    }
+
+    if (Date.now() > storedData.expiresAt) {
+      otpStore.delete(storeKey);
+      return res.status(400).json({ message: "Verification code has expired." });
+    }
+
+    if (storedData.code !== code) {
+      return res.status(400).json({ message: "Invalid verification code." });
+    }
+
+    // Code is valid, update the database
+    const columnToUpdate = type === 'email' ? 'email_verified' : 'phone_verified';
+    
+    await db.query(
+      `UPDATE profiles SET ${columnToUpdate} = true WHERE user_id = $1`,
+      [id]
+    );
+
+    // Clear the OTP
+    otpStore.delete(storeKey);
+
+    res.json({ message: `${type} verified successfully.` });
+  } catch (error) {
+    console.error("verifyCode error:", error);
+    res.status(500).json({ message: "Failed to verify code." });
+  }
+};

@@ -6,7 +6,9 @@ import {
   updateProfile,
   deleteProfilePicture,
   addSocialLink,
-  deleteSocialLink
+  deleteSocialLink,
+  requestVerification,
+  verifyCode
 } from "../controllers/profileController.js";
 
 import upload from '../middleware/updload.js';
@@ -47,6 +49,18 @@ router.delete(
   "/:id/social-links/:socialId",
   verifyToken,
   deleteSocialLink
+);
+
+router.post(
+  "/:id/verify/request",
+  verifyToken,
+  requestVerification
+);
+
+router.post(
+  "/:id/verify/confirm",
+  verifyToken,
+  verifyCode
 );
 
 export default router;

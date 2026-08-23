@@ -7,6 +7,7 @@ import { deleteService } from "../services/serviceApi.js";
 import { API_URL } from "../services/api.js";
 import ProfileAvatar from "../components/ProfileAvatar.jsx";
 import ServiceCard from "../components/ServiceCard.jsx";
+import VerificationModal from "../components/VerificationModal.jsx";
 import "./UserProfile.css";
 
 const InlineEdit = ({ value, label, name, type = "text", isEditing, onChange, multiline = false, placeholder }) => {
@@ -148,6 +149,15 @@ const UserProfile = () => {
   const canEdit = isOwnProfile || isAdmin;
 
   const hasUnsavedChanges = Object.keys(pendingChanges).length > 0 || pendingPictureFile !== null || pendingPictureRemove;
+
+  const [verificationModal, setVerificationModal] = useState({ isOpen: false, type: null, contactValue: null });
+
+  const handleVerified = (type) => {
+    setProfile(prev => ({
+      ...prev,
+      [type === 'email' ? 'email_verified' : 'phone_verified']: true
+    }));
+  };
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -571,6 +581,21 @@ const UserProfile = () => {
                         isEditing={canEdit} 
                         onChange={handleFieldChange} 
                       />
+                      {currentDisplayValues.email && (
+                        profile.email_verified && !pendingChanges.email ? (
+                          <span className="verified-badge" style={{color: '#28a745', fontSize: '12px', marginLeft: '8px'}}><i className="fa-solid fa-check-circle"></i> Verified</span>
+                        ) : (
+                          canEdit && !hasUnsavedChanges && (
+                            <button 
+                              className="verify-btn" 
+                              style={{marginLeft: '8px', padding: '2px 8px', fontSize: '12px', backgroundColor: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
+                              onClick={() => setVerificationModal({ isOpen: true, type: 'email', contactValue: currentDisplayValues.email })}
+                            >
+                              Verify
+                            </button>
+                          )
+                        )
+                      )}
                     </div>
                   </div>
                 )}
@@ -818,6 +843,15 @@ const UserProfile = () => {
           </main>
         </div>
       </div>
+      
+      <VerificationModal 
+        isOpen={verificationModal.isOpen}
+        userId={profile.user_id}
+        type={verificationModal.type}
+        contactValue={verificationModal.contactValue}
+        onClose={() => setVerificationModal({ isOpen: false, type: null, contactValue: null })}
+        onVerified={handleVerified}
+      />
     </div>
   );
 };

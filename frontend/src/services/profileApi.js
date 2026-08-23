@@ -61,3 +61,13 @@ export const deleteSocialLink = async (
 
   return response.data;
 };
+
+export const requestVerification = async (userId, type) => {
+  const response = await api.post(`/profiles/${userId}/verify/request`, { type });
+  return response.data;
+};
+
+export const confirmVerification = async (userId, type, code) => {
+  const response = await api.post(`/profiles/${userId}/verify/confirm`, { type, code });
+  return response.data;
+};
