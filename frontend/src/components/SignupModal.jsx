@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GoogleLogin } from '@react-oauth/google';
 import { useUser } from '../context/UserContext.jsx';
-import { registerRequest, registerConfirm } from '../services/authApi.js';
+import { registerRequest, registerConfirm, googleLogin as apiGoogleLogin } from '../services/authApi.js';
 import './AuthModals.css';
 
 const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
@@ -70,6 +71,21 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true);
+      setError('');
+      await apiGoogleLogin(credentialResponse.credential);
+      await refreshCurrentUser();
+      onClose();
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || 'Google Signup failed.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleModalClose = () => {
     onClose();
     setTimeout(() => {
@@ -98,6 +114,20 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
               <p className="auth-modal-subtitle">Join the marketplace to offer or request services.</p>
               
               {error && <div className="auth-error">{error}</div>}
+
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => {
+                    setError('Google Signup failed.');
+                  }}
+                  useOneTap
+                />
+              </div>
+
+              <div style={{ textAlign: 'center', marginBottom: '20px', color: '#666', fontSize: '14px' }}>
+                — OR —
+              </div>
 
               <form onSubmit={handleRequestSubmit} className="auth-form">
                 <div className="form-group">

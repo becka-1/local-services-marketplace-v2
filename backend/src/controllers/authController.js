@@ -2,6 +2,9 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import db from '../db/db.js';
 import { sendVerificationEmail } from '../services/emailService.js';
+import { OAuth2Client } from 'google-auth-library';
+
+const googleClient = new OAuth2Client(process.env.VITE_GOOGLE_CLIENT_ID || '879774593708-04efjl77oic8knafvqclk69rii55s0eq.apps.googleusercontent.com');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_jwt_key_for_dev';
 const JWT_EXPIRES_IN = '7d';
@@ -231,5 +234,82 @@ export const getMe = async (req, res) => {
   } catch (error) {
     console.error('Get Me Error:', error);
     res.status(500).json({ message: 'Server error fetching user profile.' });
+  }
+};
+
+export const googleLogin = async (req, res) => {
+  try {
+    const { token: idToken } = req.body;
+
+    if (!idToken) {
+      return res.status(400).json({ message: 'No Google ID token provided.' });
+    }
+
+    // Verify the token
+    const ticket = await googleClient.verifyIdToken({
+      idToken,
+      audience: process.env.VITE_GOOGLE_CLIENT_ID || '879774593708-04efjl77oic8knafvqclk69rii55s0eq.apps.googleusercontent.com',
+    });
+
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name, picture } = payload;
+
+    // Check if user exists by google_id or email
+    let userResult = await db.query('SELECT * FROM users WHERE google_id = $1 OR email = $2 LIMIT 1', [googleId, email]);
+    let user = userResult.rows[0];
+
+    if (!user) {
+      // Create new user since they don't exist
+      await db.query('BEGIN');
+      
+      const insertUserResult = await db.query(
+        'INSERT INTO users (email, google_id) VALUES ($1, $2) RETURNING id, email, role, created_at',
+        [email, googleId]
+      );
+      user = insertUserResult.rows[0];
+
+      // Create the profile
+      await db.query(
+        'INSERT INTO profiles (user_id, name, email, email_verified, profile_picture) VALUES ($1, $2, $3, true, $4)',
+        [user.id, name, email, picture || null]
+      );
+
+      await db.query('COMMIT');
+    } else {
+      // If user exists but google_id is not set, link the account
+      if (!user.google_id) {
+        await db.query('UPDATE users SET google_id = $1 WHERE id = $2', [googleId, user.id]);
+      }
+    }
+
+    // Create JWT
+    const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
+    });
+
+    // Set HTTP-Only cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    res.status(200).json({
+      message: 'Google Login successful',
+      user: {
+        id: user.id,
+        email: user.email,
+        name: name,
+        role: user.role,
+      }
+    });
+
+  } catch (error) {
+    console.error('Google Login Error:', error);
+    if (error.message.includes('Token used too late') || error.message.includes('Invalid token')) {
+      return res.status(401).json({ message: 'Invalid or expired Google token.' });
+    }
+    res.status(500).json({ message: 'Server error during Google login.' });
   }
 };
