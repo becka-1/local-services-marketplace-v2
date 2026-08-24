@@ -2,12 +2,10 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { getFeaturedServices } from "../services/serviceApi.js";
 import "./Home.css";
-import ServiceDetailsModal from "../components/ServiceDetailsModal.jsx";
+import ServiceCard from "../components/ServiceCard.jsx";
 
 const Home = () => {
   const [featured, setFeatured] = useState([]);
-  const [selectedServiceId, setSelectedServiceId] = useState(null);
-  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -99,29 +97,10 @@ const Home = () => {
         {featured.length > 0 ? (
           <div className="featured-grid">
             {featured.map(service => (
-              <div 
+              <ServiceCard 
                 key={service.id} 
-                className="featured-service-card"
-                onClick={() => {
-                  setSelectedServiceId(service.id);
-                  setIsDetailsModalOpen(true);
-                }}
-              >
-                <div className="card-image">
-                  {service.image_url ? (
-                    <img src={`http://localhost:5000${service.image_url}`} alt={service.title} />
-                  ) : (
-                    <div className="image-placeholder">No Image</div>
-                  )}
-                  <div className="card-price-badge">{service.price ? `$${service.price}` : 'Negotiable'}</div>
-                </div>
-                <div className="card-content">
-                  <span className="card-category">{service.category_name}</span>
-                  <h3 className="card-title">{service.title}</h3>
-                  <p className="card-provider">By {service.provider_name}</p>
-                  <p className="card-location"><i className="fa-solid fa-location-dot"></i> {service.location}</p>
-                </div>
-              </div>
+                service={service} 
+              />
             ))}
           </div>
         ) : (
@@ -140,13 +119,6 @@ const Home = () => {
         </div>
       </footer>
 
-      {selectedServiceId && (
-        <ServiceDetailsModal
-          isOpen={isDetailsModalOpen}
-          onClose={() => setIsDetailsModalOpen(false)}
-          serviceId={selectedServiceId}
-        />
-      )}
     </div>
   );
 };

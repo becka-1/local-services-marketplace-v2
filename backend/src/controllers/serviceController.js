@@ -163,6 +163,16 @@ export const createService = async (req, res) => {
       });
     }
 
+    const filesCount = req.files ? req.files.length : 0;
+    const defaultImagesArray = defaultImages ? (Array.isArray(defaultImages) ? defaultImages : [defaultImages]) : [];
+    const totalImages = filesCount + defaultImagesArray.length;
+
+    if (totalImages < 1 || totalImages > 5) {
+      return res.status(400).json({
+        message: "Please provide at least 1 and up to 5 images for your service.",
+      });
+    }
+
     await client.query("BEGIN");
 
     const serviceResult = await client.query(
@@ -234,14 +244,16 @@ export const createService = async (req, res) => {
             INSERT INTO service_images (
               service_id,
               image_data,
-              mime_type
+              mime_type,
+              default_filename
             )
-            VALUES ($1, $2, $3);
+            VALUES ($1, $2, $3, $4);
             `,
             [
               service.id,
               buffer,
               mimeType,
+              filename,
             ]
           );
         } catch (err) {
@@ -279,6 +291,7 @@ export const getServiceImages = async (req, res) => {
       SELECT
         id,
         mime_type,
+        default_filename,
         created_at
       FROM service_images
       WHERE service_id = $1
@@ -349,6 +362,7 @@ export const updateService = async (req, res) => {
       price,
       location,
       defaultImages,
+      imagesToDelete,
     } = req.body;
 
     if (!category_id || !title || !description) {
@@ -453,20 +467,50 @@ export const updateService = async (req, res) => {
             INSERT INTO service_images (
               service_id,
               image_data,
-              mime_type
+              mime_type,
+              default_filename
             )
-            VALUES ($1, $2, $3);
+            VALUES ($1, $2, $3, $4);
             `,
             [
               id,
               buffer,
               mimeType,
+              filename,
             ]
           );
         } catch (err) {
           console.error("Failed to save default image:", filename, err);
         }
       }
+    }
+
+    // Process image deletions
+    if (imagesToDelete) {
+      const deleteArray = Array.isArray(imagesToDelete) ? imagesToDelete : [imagesToDelete];
+      if (deleteArray.length > 0) {
+        await client.query(
+          `
+          DELETE FROM service_images
+          WHERE id = ANY($1::int[]) AND service_id = $2
+          `,
+          [deleteArray, id]
+        );
+      }
+    }
+
+    // Final validation of image count
+    const countResult = await client.query(
+      `SELECT COUNT(*) FROM service_images WHERE service_id = $1`,
+      [id]
+    );
+    const finalCount = parseInt(countResult.rows[0].count, 10);
+
+    if (finalCount < 1 || finalCount > 5) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "Please ensure your service has at least 1 and up to 5 images.",
+      });
     }
 
     await client.query("COMMIT");
@@ -561,6 +605,18 @@ export const deleteServiceImage = async (req, res) => {
         message: "Forbidden. You do not have permission to delete this image.",
       });
     }
+
+    // Check if it's the last image
+    const countResult = await db.query(
+      `SELECT COUNT(*) FROM service_images WHERE service_id = $1`,
+      [id]
+    );
+    if (parseInt(countResult.rows[0].count, 10) <= 1) {
+      return res.status(400).json({
+        message: "A service must have at least 1 image. You cannot delete the last image.",
+      });
+    }
+
     const imageResult = await db.query(
       `
       DELETE FROM service_images

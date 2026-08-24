@@ -124,6 +124,11 @@ const CreateService = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
+      const totalImages = images.length + selectedDefaultImages.length;
+      if (totalImages < 1 || totalImages > 5) {
+        return setError("Please provide at least 1 and up to 5 images for your service.");
+      }
+
       setLoading(true);
       setError("");
 

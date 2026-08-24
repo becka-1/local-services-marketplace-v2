@@ -32,7 +32,7 @@ const ServiceCard = ({ service, isOwner = false, onDelete, onUpdate }) => {
   return (
     <>
       <motion.article 
-        className="service-card"
+        className="service-card modern"
         drag
         dragSnapToOrigin
         dragTransition={{
@@ -40,93 +40,97 @@ const ServiceCard = ({ service, isOwner = false, onDelete, onUpdate }) => {
           bounceDamping: 20
         }}
       >
-          <ServiceGallery serviceId={service.id} />
+          <div className="modern-image-wrapper">
+            <ServiceGallery serviceId={service.id} />
+          </div>
 
-          <div className="service-card-content">
-            <p className="service-category">
+          <div className="service-card-content modern-content">
+            <p className="service-category modern-category">
               {service.category_name}
             </p>
 
-            <h2>{service.title}</h2>
-
-            <p className="service-description">
-              {service.description}
-            </p>
-
-            <div className="service-info">
-              <span>{service.location}</span>
-
-              <span>
-                {service.price
-                  ? `${service.price} ETB`
-                  : "Price negotiable"}
-              </span>
+            <div className="modern-header-row">
+              <h2 className="modern-title">{service.title}</h2>
+              <div className="modern-price">
+                {service.price ? `${service.price} ETB` : "Negotiable"}
+              </div>
             </div>
 
-            <div className="link-container">
-              <Link
-                to={`/users/${service.user_id}`}
-                className="service-provider"
-              >
+            <p className="modern-section-label">DESCRIPTION</p>
+            <p className="service-description modern-description">
+              {service.description.length > 120 
+                ? `${service.description.substring(0, 120)}...` 
+                : service.description}
+            </p>
+
+            <p className="modern-section-label">PROVIDER</p>
+            <div className="modern-provider-info">
+              <Link to={`/users/${service.user_id}`} className="modern-provider-link" onClick={e => e.stopPropagation()}>
                 <ProfileAvatar
                   userId={service.user_id}
                   name={service.provider_name}
-                  hasProfilePicture={
-                    service.provider_has_profile_picture
-                  }
+                  hasProfilePicture={service.provider_has_profile_picture}
                   size="small"
                 />
-
-                <span>{service.provider_name}</span>
+                <span className="modern-provider-name">{service.provider_name}</span>
               </Link>
-              <div className="details-button">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsDetailsModalOpen(true);
-                  }}
-                >
-                  View Details
-                </button>
-              </div>
+              <span className="modern-location">
+                <i className="fa-solid fa-location-dot"></i> {service.location}
+              </span>
             </div>
 
-            {isOwner ? (
-              <div className="owner-card-actions">
-                <button
-                  type="button"
-                  className="card-edit-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsEditModalOpen(true);
-                  }}
-                >
-                  <i className="fa-solid fa-pen"></i> Edit Service
-                </button>
-                <button
-                  type="button"
-                  className="card-delete-btn"
-                  onClick={handleDelete}
-                  disabled={deleting}
-                >
-                  {deleting ? "Deleting..." : <><i className="fa-solid fa-trash"></i> Delete</>}
-                </button>
-              </div>
-            ) : (
-              <div className="request-button">
-                <button 
-                  type="button" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsRequestModalOpen(true);
-                  }}
-                >
-                  Request Service
-                </button>
-              </div>
-            )}
-            
+            <div className="modern-actions">
+              {isOwner ? (
+                <>
+                  <button
+                    type="button"
+                    className="modern-btn-icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(e);
+                    }}
+                    disabled={deleting}
+                    title="Delete Service"
+                  >
+                    <i className="fa-solid fa-trash"></i>
+                  </button>
+                  <button
+                    type="button"
+                    className="modern-btn-primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsEditModalOpen(true);
+                    }}
+                  >
+                    EDIT SERVICE
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className="modern-btn-icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsDetailsModalOpen(true);
+                    }}
+                    title="View Details"
+                  >
+                    <i className="fa-solid fa-circle-info"></i>
+                  </button>
+                  <button 
+                    type="button" 
+                    className="modern-btn-primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsRequestModalOpen(true);
+                    }}
+                  >
+                    REQUEST SERVICE
+                  </button>
+                </>
+              )}
+            </div>
           </div>
       </motion.article>
 

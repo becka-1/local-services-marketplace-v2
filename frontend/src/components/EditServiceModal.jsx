@@ -166,42 +166,53 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
   };
 
   const handleToggleDefaultImage = (filename) => {
-    setSelectedDefaultImages((prev) => {
-      if (prev.includes(filename)) {
-        return prev.filter((img) => img !== filename);
+    const existingImage = existingImages.find(img => img.default_filename === filename);
+    
+    if (existingImage) {
+      if (imagesToDelete.includes(existingImage.id)) {
+        setImagesToDelete(prev => prev.filter(id => id !== existingImage.id));
       } else {
-        const activeExistingCount = existingImages.length - imagesToDelete.length;
-        if (activeExistingCount + newImages.length + prev.length >= 5) {
-          alert("You can only have up to 5 images in total.");
-          return prev;
-        }
-        return [...prev, filename];
+        setImagesToDelete(prev => [...prev, existingImage.id]);
       }
-    });
+    } else {
+      setSelectedDefaultImages((prev) => {
+        if (prev.includes(filename)) {
+          return prev.filter((img) => img !== filename);
+        } else {
+          const activeExistingCount = existingImages.length - imagesToDelete.length;
+          if (activeExistingCount + newImages.length + prev.length >= 5) {
+            alert("You can only have up to 5 images in total.");
+            return prev;
+          }
+          return [...prev, filename];
+        }
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const activeExistingCount = existingImages.length - imagesToDelete.length;
+      const totalImages = activeExistingCount + newImages.length + selectedDefaultImages.length;
+      if (totalImages < 1 || totalImages > 5) {
+        return setError("Please ensure your service has at least 1 and up to 5 images.");
+      }
+
       setSaving(true);
       setError("");
 
-      // 1. Process deferred image deletions
-      if (imagesToDelete.length > 0) {
-        await Promise.all(
-          imagesToDelete.map((imageId) =>
-            deleteServiceImage(serviceId, imageId)
-          )
-        );
-      }
-
-      // 2. Upload new data & new images
+      // Upload new data, new images, and deletions
       const data = new FormData();
       data.append("category_id", formData.category_id);
       data.append("title", formData.title);
       data.append("description", formData.description);
       data.append("price", formData.price);
       data.append("location", formData.location);
+
+      if (imagesToDelete.length > 0) {
+        imagesToDelete.forEach(id => data.append("imagesToDelete", id));
+      }
 
       newImages.forEach((img) => {
         data.append("images", img);
@@ -235,7 +246,7 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
 
   return (
     <AnimatePresence>
-      <div className="edit-modal-backdrop" onClick={onClose}>
+      <div key="edit-modal-backdrop" className="edit-modal-backdrop" onClick={onClose}>
         <motion.div
           className="edit-modal-container"
           onClick={(e) => e.stopPropagation()}
@@ -455,7 +466,11 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
                 <p className="default-images-label">Or choose from our default gallery:</p>
                 <div className="default-images-grid">
                   {defaultImagesList.map((filename) => {
-                    const isSelected = selectedDefaultImages.includes(filename);
+                    const existingImage = existingImages.find(img => img.default_filename === filename);
+                    const isExistingSelected = existingImage && !imagesToDelete.includes(existingImage.id);
+                    const isNewSelected = selectedDefaultImages.includes(filename);
+                    const isSelected = isExistingSelected || isNewSelected;
+
                     return (
                       <div 
                         key={filename} 
