@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router';
 import { UserProvider } from './context/UserContext.jsx';
 import Navbar from './components/Navbar.jsx';
+import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
 import Services from './pages/Services.jsx';
 import UserProfile from './pages/UserProfile.jsx';
@@ -29,6 +30,7 @@ function App() {
             <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           </Routes>
         </div>
+        <Footer />
       </div>
     </UserProvider>
   );

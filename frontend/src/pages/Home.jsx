@@ -108,17 +108,6 @@ const Home = () => {
         )}
       </section>
 
-      {/* Footer CTA */}
-      <footer className="home-footer">
-        <div className="footer-content">
-          <h2>Ready to transform your local experience?</h2>
-          <p>Join thousands of others in building a stronger, more connected community marketplace.</p>
-          <button className="btn-primary-large" onClick={() => navigate('/services')}>
-            Get Started Now
-          </button>
-        </div>
-      </footer>
-
     </div>
   );
 };

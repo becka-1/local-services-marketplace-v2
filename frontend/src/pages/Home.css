@@ -372,32 +372,6 @@
   margin: 4px 0;
 }
 
-/* ============================
-   FOOTER CTA
-   ============================ */
-.home-footer {
-  background: var(--color-dark);
-  padding: 100px 5%;
-  text-align: center;
-  color: var(--color-surface);
-}
-
-.footer-content {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.footer-content h2 {
-  font-size: 3rem;
-  font-weight: 800;
-  margin-bottom: 24px;
-}
-
-.footer-content p {
-  font-size: 1.25rem;
-  color: var(--color-light-blue);
-  margin-bottom: 40px;
-}
 
 /* Responsive */
 @media (max-width: 900px) {
