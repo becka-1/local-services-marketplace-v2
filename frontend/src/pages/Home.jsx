@@ -35,7 +35,7 @@ const Home = () => {
           <form className="hero-search-form" onSubmit={(e) => {
             e.preventDefault();
             const val = e.target.elements.search.value;
-            if(val) navigate(`/services?search=${encodeURIComponent(val)}`);
+            if (val) navigate(`/services?search=${encodeURIComponent(val)}`);
             else navigate('/services');
           }}>
             <div className="hero-search-box">
@@ -93,13 +93,13 @@ const Home = () => {
           <h2 className="section-title">Featured Services</h2>
           <Link to="/services" className="view-all-link">View All →</Link>
         </div>
-        
+
         {featured.length > 0 ? (
           <div className="featured-grid">
             {featured.map(service => (
-              <ServiceCard 
-                key={service.id} 
-                service={service} 
+              <ServiceCard
+                key={service.id}
+                service={service}
               />
             ))}
           </div>

@@ -12,6 +12,7 @@ const Navbar = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuTimeoutRef = useRef(null);
   const menuContainerRef = useRef(null);
 
@@ -60,19 +61,29 @@ const Navbar = () => {
     <header className="main-navbar">
       <div className="navbar-container">
         {/* Brand / Logo */}
-        <Link to="/" className="navbar-brand">
-          <span className="brand-name">LocalServices</span>
-        </Link>
+        <div className="navbar-brand-section">
+          <Link to="/" className="navbar-brand">
+            <span className="brand-name">LocalServices</span>
+          </Link>
+          <button 
+            className="mobile-menu-toggle" 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            <i className={`fa-solid ${isMobileMenuOpen ? 'fa-xmark' : 'fa-bars'}`}></i>
+          </button>
+        </div>
 
-        {/* Center Navigation Links */}
+        <div className={`navbar-links-wrapper ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+          {/* Center Navigation Links */}
         <nav className="navbar-nav">
-          <Link to="/" className="nav-link">
+          <Link to="/" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
             Home
           </Link>
-          <Link to="/services" className="nav-link">
+          <Link to="/services" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
             Browse Services
           </Link>
-          <Link to="/services/new" className="nav-link btn-post-service">
+          <Link to="/services/new" className="nav-link btn-post-service" onClick={() => setIsMobileMenuOpen(false)}>
             + Post a Service
           </Link>
         </nav>
@@ -122,7 +133,10 @@ const Navbar = () => {
                     <Link
                       to={`/users/${currentUserId}/requests`}
                       className="dropdown-item"
-                      onClick={() => setShowUserMenu(false)}
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        setIsMobileMenuOpen(false);
+                      }}
                     >
                       <i className="fa-solid fa-clipboard-list"></i> My Requests
                     </Link>
@@ -161,6 +175,7 @@ const Navbar = () => {
               <button className="btn-signup-solid" onClick={() => setShowSignupModal(true)}>Sign Up</button>
             </div>
           )}
+        </div>
         </div>
       </div>
 

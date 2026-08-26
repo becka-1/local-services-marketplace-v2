@@ -17,6 +17,12 @@
   gap: 20px;
 }
 
+.navbar-brand-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .navbar-brand {
   display: flex;
   align-items: center;
@@ -35,6 +41,22 @@
 
 .brand-icon {
   font-size: 22px;
+}
+
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+  display: none; /* Hidden on desktop */
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--color-text);
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* Wrapper for Links and User Section */
+.navbar-links-wrapper {
+  display: contents; /* Makes it disappear visually, children act as direct children of container */
 }
 
 .navbar-nav {
@@ -228,4 +250,75 @@
 .btn-logout:hover {
   background-color: var(--color-surface-muted);
   color: var(--color-dark);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .navbar-container {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 20px;
+    gap: 0;
+  }
+
+  .navbar-brand-section {
+    width: 100%;
+  }
+
+  .mobile-menu-toggle {
+    display: block;
+  }
+
+  .navbar-links-wrapper {
+    display: none; /* Hide by default */
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-light-blue);
+    gap: 16px;
+  }
+
+  .navbar-links-wrapper.mobile-open {
+    display: flex; /* Show when open */
+  }
+
+  .navbar-nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .navbar-user-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .auth-buttons {
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-login-outline, .btn-signup-solid {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .user-dropdown-wrapper {
+    position: static;
+    box-shadow: none;
+    border: none;
+    padding-top: 0;
+    width: 100%;
+  }
+
+  .user-dropdown-menu {
+    border: none;
+    box-shadow: none;
+    background: var(--color-base);
+    margin-top: 10px;
+  }
 }
