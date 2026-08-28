@@ -18,9 +18,9 @@
   /* Keeps default browser settings intact for accessibility */
   font-size: 100%;
 
-  --color-base: #f7fbfc; /* Very light tint for backgrounds to ensure contrast */
-  --color-surface: #ffffff; /* White for cards/elements to ensure contrast */
-  --color-surface-muted: #e6f1f5; /* Muted surface matching the palette */
+  --color-base: #f7fbfc;
+  --color-surface: #ffffff;
+  --color-surface-muted: #e6f1f5;
   --color-light-blue: #8ecae6;
   --color-primary: #219ebc;
   --color-dark: #023047;
@@ -28,7 +28,7 @@
   --color-accent-orange: #fb8500;
   
   --color-text: var(--color-dark);
-  --color-text-muted: #10425c; /* Lighter shade of dark blue for secondary text */
+  --color-text-muted: #10425c;
 
   --font-heading: 'Ubuntu', sans-serif;
   --font-body: 'Nunito Sans', sans-serif;
@@ -45,10 +45,32 @@
   --fs-small: clamp(0.8rem, 0.1vw + 0.75rem, 0.9rem);
 }
 
+/* ─── Dark Mode Variables ─── */
+html.dark {
+  --color-base: #071923;
+  --color-surface: #0b2431;
+  --color-surface-muted: #123746;
+
+  --color-light-blue: #8ecae6;
+  --color-primary: #27b8d8;
+  --color-dark: #e8f7fb;
+
+  --color-accent-yellow: #ffc928;
+  --color-accent-orange: #ff9d2e;
+
+  --color-text: #e8f7fb;
+  --color-text-muted: #a9c8d3;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 body, p, li {

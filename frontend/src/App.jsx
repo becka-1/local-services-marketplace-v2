@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router';
 import { UserProvider } from './context/UserContext.jsx';
+import { ThemeProvider } from './context/ThemeContext.jsx';
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
@@ -16,25 +17,27 @@ import AdminDashboard from './pages/AdminDashboard.jsx';
 
 function App() {
   return (
-    <UserProvider>
-      <div className="app-layout">
-        <Navbar />
-        <div className="app-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/users/:id" element={<UserProfile />} />
-            <Route path="/services/new" element={<ProtectedRoute><CreateService /></ProtectedRoute>} />
-            <Route path="/users/:id/requests" element={<ProtectedRoute><MyRequests /></ProtectedRoute>} />
-            <Route path="/requests/:id" element={<ProtectedRoute><RequestDetails /></ProtectedRoute>} />
-            <Route path="/requests/:id/edit" element={<ProtectedRoute><EditRequest /></ProtectedRoute>} />
-            <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
-            <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-          </Routes>
+    <ThemeProvider>
+      <UserProvider>
+        <div className="app-layout">
+          <Navbar />
+          <div className="app-content">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/users/:id" element={<UserProfile />} />
+              <Route path="/services/new" element={<ProtectedRoute><CreateService /></ProtectedRoute>} />
+              <Route path="/users/:id/requests" element={<ProtectedRoute><MyRequests /></ProtectedRoute>} />
+              <Route path="/requests/:id" element={<ProtectedRoute><RequestDetails /></ProtectedRoute>} />
+              <Route path="/requests/:id/edit" element={<ProtectedRoute><EditRequest /></ProtectedRoute>} />
+              <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+              <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            </Routes>
+          </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
-    </UserProvider>
+      </UserProvider>
+    </ThemeProvider>
   );
 }
 

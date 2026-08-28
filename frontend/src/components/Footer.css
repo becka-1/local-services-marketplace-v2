@@ -1,8 +1,9 @@
 .global-footer {
-  background-color: var(--color-dark);
-  color: var(--color-surface-muted);
+  background-color: #023047; /* pinned – footer does not follow dark mode */
+  color: #e6f1f5;
   padding: 60px 20px 20px 20px;
   font-family: var(--font-body);
+  transition: none; /* opt-out of global theme transition */
 }
 
 .footer-container {
@@ -21,7 +22,7 @@
   font-family: var(--font-heading);
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--color-surface);
+  color: #ffffff;
   text-decoration: none;
   display: inline-block;
   margin-bottom: 16px;
@@ -47,21 +48,21 @@
   height: 40px;
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.1);
-  color: var(--color-surface);
+  color: #ffffff;
   text-decoration: none;
   font-size: 1.1rem;
   transition: background-color 0.3s, transform 0.2s;
 }
 
 .social-link:hover {
-  background-color: var(--color-primary);
+  background-color: #219ebc;
   transform: translateY(-3px);
 }
 
 .footer-heading {
   font-family: var(--font-heading);
   font-size: 1.1rem;
-  color: var(--color-surface);
+  color: #ffffff;
   margin-bottom: 20px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -81,7 +82,7 @@
 }
 
 .footer-link:hover {
-  color: var(--color-accent-yellow);
+  color: #ffb703;
 }
 
 .subscribe-text {
@@ -102,7 +103,7 @@
   border: none;
   border-radius: 6px 0 0 6px;
   background-color: rgba(255, 255, 255, 0.1);
-  color: var(--color-surface);
+  color: #ffffff;
   outline: none;
   font-family: var(--font-body);
 }
@@ -119,16 +120,16 @@
   padding: 12px 24px;
   border: none;
   border-radius: 0 6px 6px 0;
-  background-color: var(--color-primary);
-  color: var(--color-surface);
+  background-color: #219ebc;
+  color: #ffffff;
   font-weight: 700;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .subscribe-button:hover {
-  background-color: var(--color-light-blue);
-  color: var(--color-dark);
+  background-color: #8ecae6;
+  color: #023047;
 }
 
 .footer-bottom {
@@ -154,7 +155,7 @@
 }
 
 .legal-link:hover {
-  color: var(--color-surface);
+  color: #ffffff;
 }
 
 .legal-separator {

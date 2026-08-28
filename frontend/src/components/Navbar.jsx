@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router";
 import { useUser } from "../context/UserContext.jsx";
+import { useTheme } from "../context/ThemeContext.jsx";
 import ProfileAvatar from "./ProfileAvatar.jsx";
 import LoginModal from "./LoginModal.jsx";
 import SignupModal from "./SignupModal.jsx";
@@ -9,6 +10,7 @@ import "./Navbar.css";
 
 const Navbar = () => {
   const { isAuthenticated, currentUser, currentUserId, currentUserProfile, handleLogoutSuccess } = useUser();
+  const { isDark, toggleTheme } = useTheme();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
@@ -65,13 +67,24 @@ const Navbar = () => {
           <Link to="/" className="navbar-brand">
             <span className="brand-name">LocalServices</span>
           </Link>
-          <button
-            className="mobile-menu-toggle"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            <i className={`fa-solid ${isMobileMenuOpen ? 'fa-xmark' : 'fa-bars'}`}></i>
-          </button>
+          <div className="navbar-mobile-actions">
+            {/* Mobile Theme Toggle */}
+            <button
+              className="navbar-theme-toggle mobile-only"
+              onClick={toggleTheme}
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={isDark ? 'Light mode' : 'Dark mode'}
+            >
+              <i className={`fa-solid ${isDark ? 'fa-sun' : 'fa-moon'}`}></i>
+            </button>
+            <button
+              className="mobile-menu-toggle"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              <i className={`fa-solid ${isMobileMenuOpen ? 'fa-xmark' : 'fa-bars'}`}></i>
+            </button>
+          </div>
         </div>
 
         <div className={`navbar-links-wrapper ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
@@ -90,6 +103,16 @@ const Navbar = () => {
 
           {/* Right Corner Profile or Login */}
           <div className="navbar-user-section">
+            {/* Desktop Theme Toggle */}
+            <button
+              className="navbar-theme-toggle desktop-only"
+              onClick={toggleTheme}
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={isDark ? 'Light mode' : 'Dark mode'}
+            >
+              <i className={`fa-solid ${isDark ? 'fa-sun' : 'fa-moon'}`}></i>
+            </button>
+
             {isAuthenticated ? (
               <div className="navbar-auth-group">
                 <div
