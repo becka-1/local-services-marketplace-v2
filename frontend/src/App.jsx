@@ -9,6 +9,7 @@ import CreateService from './pages/CreateService.jsx';
 import MyRequests from './pages/MyRequests.jsx';
 import RequestDetails from './pages/RequestDetails.jsx';
 import EditRequest from './pages/EditRequest.jsx';
+import Messages from './pages/Messages.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import AdminRoute from './components/AdminRoute.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
@@ -27,6 +28,7 @@ function App() {
             <Route path="/users/:id/requests" element={<ProtectedRoute><MyRequests /></ProtectedRoute>} />
             <Route path="/requests/:id" element={<ProtectedRoute><RequestDetails /></ProtectedRoute>} />
             <Route path="/requests/:id/edit" element={<ProtectedRoute><EditRequest /></ProtectedRoute>} />
+            <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
             <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           </Routes>
         </div>

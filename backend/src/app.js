@@ -1,4 +1,6 @@
 import express from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import "dotenv/config";
@@ -11,18 +13,31 @@ import profileRoutes from './routes/profileRoutes.js';
 import requestRoutes from './routes/requestRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import conversationRoutes from './routes/conversationRoutes.js';
 
 import { initEmailService } from "./services/emailService.js";
+import { initializeSocket } from "./socket/socketHandler.js";
 
 const app = express();
+const httpServer = createServer(app);
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({
-  origin: "http://localhost:5173", // Replace with frontend URL
+// CORS config — shared between Express and Socket.IO
+const corsOptions = {
+  origin: "http://localhost:5173",
   credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
+
+// Socket.IO
+const io = new Server(httpServer, {
+  cors: corsOptions,
+});
+app.set('io', io); // Make io available to REST controllers
+initializeSocket(io);
 
 app.get("/api/health", async (req, res) => {
   try {
@@ -48,10 +63,11 @@ app.use("/api/profiles", profileRoutes);
 app.use("/api/requests", requestRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/conversations", conversationRoutes);
 
 // Initialize email service
 initEmailService();
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

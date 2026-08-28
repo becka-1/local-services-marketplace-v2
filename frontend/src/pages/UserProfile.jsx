@@ -544,6 +544,18 @@ const UserProfile = () => {
               </Link>
             </div>
           )}
+
+          {!isOwnProfile && currentUser && (
+            <div className="profile-header-actions">
+              <Link
+                to={`/messages?userId=${profile.user_id}`}
+                className="btn-profile-action btn-add-service-primary"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+              >
+                <i className="fa-regular fa-message"></i> Message
+              </Link>
+            </div>
+          )}
         </div>
 
         <div className="profile-content-grid">
