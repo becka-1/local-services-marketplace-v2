@@ -10,7 +10,6 @@
 }
 
 .service-card.modern:hover {
-  transform: translateY(-4px);
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
 }
 
@@ -123,26 +122,25 @@
 }
 
 .modern-btn-icon {
-  width: 54px;
+  width: 44px;
   height: 54px;
-  border-radius: 50%;
   border: none;
-  background-color: #f0f4f8;
-  /* Soft blue/gray matching the image button */
+  background: transparent;
   color: #5d8eb6;
-  /* Muted blue matching the image button */
-  font-size: 1.2rem;
+  font-size: 2.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s ease, color 0.2s ease;
   flex-shrink: 0;
+  padding: 0;
 }
 
 .modern-btn-icon:hover {
-  background-color: #e2eaf1;
+  background: transparent;
   color: #4a7496;
+  transform: scale(1.15);
 }
 
 .modern-btn-icon:disabled {

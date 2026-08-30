@@ -7,6 +7,7 @@ import {
   deleteServiceImage,
 } from "../services/serviceApi.js";
 import { getCategories } from "../services/categoryApi.js";
+import { API_URL } from "../services/api.js";
 import ImageCropperModal from "./ImageCropperModal.jsx";
 import "./EditServiceModal.css";
 
@@ -371,7 +372,7 @@ const EditServiceModal = ({ isOpen, onClose, serviceId, onServiceUpdated }) => {
                           }`}
                         >
                           <img
-                            src={`http://localhost:5000/api/services/${serviceId}/images/${img.id}`}
+                            src={`${API_URL}/services/${serviceId}/images/${img.id}`}
                             alt="Service"
                           />
                           {isMarked ? (

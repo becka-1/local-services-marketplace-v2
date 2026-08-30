@@ -4,7 +4,7 @@ let socket = null;
 
 export function getSocket() {
   if (!socket) {
-    socket = io('http://localhost:5000', {
+    socket = io(`http://${window.location.hostname}:5000`, {
       withCredentials: true,
       autoConnect: false,
     });

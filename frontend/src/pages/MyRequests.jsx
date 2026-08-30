@@ -3,10 +3,17 @@ import { useParams, Link } from "react-router";
 import { getRequestsByRequester, getRequestsByProvider } from "../services/requestApi.js";
 import './MyRequests.css';
 
+const STATUS_CONFIG = {
+  pending:   { icon: "fa-clock",         label: "Pending" },
+  accepted:  { icon: "fa-circle-check",  label: "Accepted" },
+  rejected:  { icon: "fa-circle-xmark",  label: "Rejected" },
+  completed: { icon: "fa-flag-checkered",label: "Completed" },
+  cancelled: { icon: "fa-ban",           label: "Cancelled" },
+};
+
 const MyRequests = () => {
-  const { id } = useParams(); // user id
-  const [view, setView] = useState("requester"); // "requester" or "provider"
-  
+  const { id } = useParams();
+  const [view, setView] = useState("requester");
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -16,12 +23,9 @@ const MyRequests = () => {
       try {
         setLoading(true);
         setError("");
-        let data;
-        if (view === "requester") {
-          data = await getRequestsByRequester(id);
-        } else {
-          data = await getRequestsByProvider(id);
-        }
+        const data = view === "requester"
+          ? await getRequestsByRequester(id)
+          : await getRequestsByProvider(id);
         setRequests(data);
       } catch (err) {
         setError("Failed to load requests.");
@@ -34,56 +38,98 @@ const MyRequests = () => {
 
   return (
     <main className="my-requests-page">
-      <div className="requests-top-nav">
-        <Link to={`/users/${id}`} className="back-link">
-          ← Back to Profile
-        </Link>
-        <Link to="/services" className="back-link">
-          Browse Services
-        </Link>
+      {/* Page Header */}
+      <div className="requests-header">
+        <div className="requests-top-nav">
+          <Link to={`/users/${id}`} className="back-link">
+            <i className="fa-solid fa-arrow-left"></i> Back to Profile
+          </Link>
+          <Link to="/services" className="back-link">
+            <i className="fa-solid fa-compass"></i> Browse Services
+          </Link>
+        </div>
+        <h1 className="requests-title">My Requests</h1>
+        <p className="requests-subtitle">Track and manage all your service requests</p>
       </div>
 
-      <h1>My Service Requests</h1>
-      
+      {/* View Toggle */}
       <div className="view-toggle">
-        <button 
-          className={view === "requester" ? "active" : ""} 
+        <button
+          className={view === "requester" ? "active" : ""}
           onClick={() => setView("requester")}
         >
-          Requests I've Made
+          <i className="fa-solid fa-paper-plane"></i>
+          Sent Requests
         </button>
-        <button 
-          className={view === "provider" ? "active" : ""} 
+        <button
+          className={view === "provider" ? "active" : ""}
           onClick={() => setView("provider")}
         >
-          Requests for My Services
+          <i className="fa-solid fa-inbox"></i>
+          Received Requests
         </button>
       </div>
 
-      {loading && <p>Loading requests...</p>}
-      {error && <p>{error}</p>}
-
+      {/* States */}
+      {loading && (
+        <div className="requests-state-box">
+          <i className="fa-solid fa-spinner fa-spin"></i>
+          <p>Loading requests…</p>
+        </div>
+      )}
+      {error && (
+        <div className="requests-state-box error">
+          <i className="fa-solid fa-triangle-exclamation"></i>
+          <p>{error}</p>
+        </div>
+      )}
       {!loading && !error && requests.length === 0 && (
-        <p>No requests found.</p>
+        <div className="requests-state-box empty">
+          <i className="fa-regular fa-folder-open"></i>
+          <p>No requests found.</p>
+          <Link to="/services" className="btn-browse-link">Browse Services</Link>
+        </div>
       )}
 
+      {/* Request Cards */}
       {!loading && !error && requests.length > 0 && (
-        <div className="requests-list">
-          {requests.map(req => (
-            <div key={req.id} className="request-card">
-              <h3>Service: {req.service_title}</h3>
-              <p>Status: <span className={`status-${req.status}`}>{req.status}</span></p>
-              {view === "requester" ? (
-                <p>Provider: {req.provider_name}</p>
-              ) : (
-                <p>Requester: {req.requester_name}</p>
-              )}
-              <p className="request-date">{new Date(req.created_at).toLocaleDateString()}</p>
-              <Link to={`/requests/${req.id}`}>
-                <button>View Details</button>
-              </Link>
-            </div>
-          ))}
+        <div className="requests-grid">
+          {requests.map(req => {
+            const statusCfg = STATUS_CONFIG[req.status] || { icon: "fa-circle", label: req.status };
+            return (
+              <div key={req.id} className={`request-card status-border-${req.status}`}>
+                {/* Card Header */}
+                <div className="request-card-header">
+                  <h3 className="request-service-title">{req.service_title}</h3>
+                  <span className={`status-pill status-${req.status}`}>
+                    <i className={`fa-solid ${statusCfg.icon}`}></i>
+                    {statusCfg.label}
+                  </span>
+                </div>
+
+                {/* Card Meta */}
+                <div className="request-card-meta">
+                  <span className="meta-item">
+                    <i className="fa-solid fa-user"></i>
+                    {view === "requester" ? req.provider_name : req.requester_name}
+                  </span>
+                  <span className="meta-item">
+                    <i className="fa-regular fa-calendar"></i>
+                    {new Date(req.created_at).toLocaleDateString("en-US", {
+                      day: "numeric", month: "short", year: "numeric"
+                    })}
+                  </span>
+                </div>
+
+                {/* Card Footer */}
+                <div className="request-card-footer">
+                  <Link to={`/requests/${req.id}`} className="btn-view-request">
+                    View Details <i className="fa-solid fa-arrow-right"></i>
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </main>

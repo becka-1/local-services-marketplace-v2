@@ -66,27 +66,27 @@ const CategoriesTab = () => {
         <h2>Category Management</h2>
       </div>
 
-      <div style={{ background: "white", padding: "24px", borderRadius: "12px", marginBottom: "32px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
-        <h3>{isEditing ? "Edit Category" : "Add New Category"}</h3>
-        <form onSubmit={handleSubmit} style={{ display: "flex", gap: "16px", marginTop: "16px", alignItems: "flex-end" }}>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 500, fontSize: "0.875rem" }}>Name</label>
+      <div style={{ background: "var(--color-surface)", border: "1px solid var(--color-light-blue)", padding: "24px", borderRadius: "16px", marginBottom: "32px", boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
+        <h3 style={{ color: "var(--color-text)", fontSize: "1.1rem", margin: "0 0 16px 0" }}>{isEditing ? "Edit Category" : "Add New Category"}</h3>
+        <form onSubmit={handleSubmit} style={{ display: "flex", gap: "16px", alignItems: "flex-end", flexWrap: "wrap" }}>
+          <div style={{ flex: "1 1 200px" }}>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: 600, fontSize: "0.85rem", color: "var(--color-text-muted)" }}>Name</label>
             <input 
               required 
               value={form.name} 
               onChange={e => setForm({...form, name: e.target.value})} 
-              style={{ width: "100%", padding: "8px 12px", border: "1px solid #cbd5e1", borderRadius: "6px" }}
+              style={{ width: "100%", padding: "9px 12px", border: "1px solid var(--color-light-blue)", borderRadius: "8px", background: "var(--color-surface-muted)", color: "var(--color-text)", boxSizing: "border-box" }}
             />
           </div>
-          <div style={{ flex: 2 }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: 500, fontSize: "0.875rem" }}>Description</label>
+          <div style={{ flex: "2 1 300px" }}>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: 600, fontSize: "0.85rem", color: "var(--color-text-muted)" }}>Description</label>
             <input 
               value={form.description} 
               onChange={e => setForm({...form, description: e.target.value})} 
-              style={{ width: "100%", padding: "8px 12px", border: "1px solid #cbd5e1", borderRadius: "6px" }}
+              style={{ width: "100%", padding: "9px 12px", border: "1px solid var(--color-light-blue)", borderRadius: "8px", background: "var(--color-surface-muted)", color: "var(--color-text)", boxSizing: "border-box" }}
             />
           </div>
-          <div style={{ display: "flex", gap: "8px" }}>
+          <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
             {isEditing && (
               <button 
                 type="button" 
@@ -96,7 +96,7 @@ const CategoriesTab = () => {
                 Cancel
               </button>
             )}
-            <button type="submit" className="admin-btn-edit" style={{ padding: "8px 16px" }}>
+            <button type="submit" className="admin-btn-edit" style={{ padding: "9px 18px", fontWeight: 600 }}>
               {isEditing ? "Save Changes" : "Create"}
             </button>
           </div>

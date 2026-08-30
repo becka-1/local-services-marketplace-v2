@@ -41,7 +41,7 @@ const ReportsTab = () => {
       </div>
       
       {reports.length === 0 ? (
-        <div style={{ background: "white", padding: "24px", borderRadius: "12px", textAlign: "center", color: "#64748b" }}>
+        <div style={{ background: "var(--color-surface)", border: "1px solid var(--color-light-blue)", padding: "32px 24px", borderRadius: "16px", textAlign: "center", color: "var(--color-text-muted)" }}>
           No reports found.
         </div>
       ) : (

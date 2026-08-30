@@ -1,15 +1,22 @@
 .main-navbar {
-  background-color: var(--color-surface);
-  border-bottom: 1px solid var(--color-light-blue);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: color-mix(in srgb, var(--color-surface) 75%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid color-mix(in srgb, var(--color-light-blue) 35%, transparent);
+  position: fixed;
+  top: 20px;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 0 auto;
+  border-radius: 100px;
+  width: calc(100% - 40px);
+  /* Ensure it doesn't touch edges on smaller screens */
 }
 
 .navbar-container {
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 12px 24px;
   display: flex;
   justify-content: space-between;
@@ -51,7 +58,8 @@
 
 /* Mobile Menu Toggle */
 .mobile-menu-toggle {
-  display: none; /* Hidden on desktop */
+  display: none !important;
+  /* Hidden on desktop */
   background: none;
   border: none;
   font-size: 24px;
@@ -62,7 +70,8 @@
 
 /* Wrapper for Links and User Section */
 .navbar-links-wrapper {
-  display: contents; /* Makes it disappear visually, children act as direct children of container */
+  display: contents;
+  /* Makes it disappear visually, children act as direct children of container */
 }
 
 .navbar-nav {
@@ -106,11 +115,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid var(--color-light-blue);
-  background: var(--color-base);
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
   color: var(--color-dark);
   font-size: 1rem;
   cursor: pointer;
@@ -122,12 +130,7 @@
   display: none;
 }
 
-.navbar-theme-toggle:hover {
-  background: var(--color-primary);
-  color: #ffffff;
-  border-color: var(--color-primary);
-  transform: translateY(-1px) rotate(12deg);
-}
+
 
 .navbar-user-section {
   display: flex;
@@ -315,7 +318,13 @@
 }
 
 /* Responsive Styles */
-@media (max-width: 768px) {
+@media (max-width: 824px) {
+  .main-navbar {
+    border-radius: 28px;
+    top: 12px;
+    width: calc(100% - 24px);
+  }
+
   .navbar-theme-toggle.desktop-only {
     display: none;
   }
@@ -336,42 +345,69 @@
   }
 
   .mobile-menu-toggle {
-    display: block;
+    display: flex !important;
   }
 
   .navbar-links-wrapper {
-    display: none; /* Hide by default */
+    display: none;
+    /* Hide by default */
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-end;
     width: 100%;
     margin-top: 16px;
     padding-top: 16px;
     border-top: 1px solid var(--color-light-blue);
     gap: 16px;
+    text-align: right;
   }
 
   .navbar-links-wrapper.mobile-open {
-    display: flex; /* Show when open */
+    display: flex;
+    /* Show when open */
   }
 
   .navbar-nav {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    align-items: flex-end;
+    width: 100%;
+    gap: 14px;
+  }
+
+  .nav-link {
+    text-align: right;
   }
 
   .navbar-user-section {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: flex-end;
+    width: 100%;
+  }
+
+  .navbar-auth-group {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .user-profile-menu-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .navbar-profile-trigger {
+    justify-content: flex-end;
   }
 
   .auth-buttons {
     width: 100%;
     flex-direction: column;
+    align-items: flex-end;
     gap: 10px;
   }
 
-  .btn-login-outline, .btn-signup-solid {
+  .btn-login-outline,
+  .btn-signup-solid {
     width: 100%;
     text-align: center;
     padding: 10px;
@@ -383,6 +419,9 @@
     border: none;
     padding-top: 0;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
   }
 
   .user-dropdown-menu {
@@ -390,5 +429,20 @@
     box-shadow: none;
     background: var(--color-base);
     margin-top: 10px;
+    width: 100%;
+    text-align: right;
+  }
+
+  .dropdown-header {
+    text-align: right;
+    align-items: flex-end;
+  }
+
+  .dropdown-item {
+    text-align: right;
+  }
+
+  .btn-logout {
+    text-align: right;
   }
 }

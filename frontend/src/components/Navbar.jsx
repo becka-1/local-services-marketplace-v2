@@ -5,6 +5,8 @@ import { useTheme } from "../context/ThemeContext.jsx";
 import ProfileAvatar from "./ProfileAvatar.jsx";
 import LoginModal from "./LoginModal.jsx";
 import SignupModal from "./SignupModal.jsx";
+import ThemeToggle from "./ThemeToggle.jsx";
+import HamburgerToggle from "./HamburgerToggle.jsx";
 import { logout } from "../services/authApi.js";
 import "./Navbar.css";
 
@@ -69,21 +71,12 @@ const Navbar = () => {
           </Link>
           <div className="navbar-mobile-actions">
             {/* Mobile Theme Toggle */}
-            <button
-              className="navbar-theme-toggle mobile-only"
-              onClick={toggleTheme}
-              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-              title={isDark ? 'Light mode' : 'Dark mode'}
-            >
-              <i className={`fa-solid ${isDark ? 'fa-sun' : 'fa-moon'}`}></i>
-            </button>
-            <button
+            <ThemeToggle className="navbar-theme-toggle mobile-only" />
+            <HamburgerToggle 
               className="mobile-menu-toggle"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              <i className={`fa-solid ${isMobileMenuOpen ? 'fa-xmark' : 'fa-bars'}`}></i>
-            </button>
+              isOpen={isMobileMenuOpen} 
+              onToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+            />
           </div>
         </div>
 
@@ -104,14 +97,7 @@ const Navbar = () => {
           {/* Right Corner Profile or Login */}
           <div className="navbar-user-section">
             {/* Desktop Theme Toggle */}
-            <button
-              className="navbar-theme-toggle desktop-only"
-              onClick={toggleTheme}
-              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-              title={isDark ? 'Light mode' : 'Dark mode'}
-            >
-              <i className={`fa-solid ${isDark ? 'fa-sun' : 'fa-moon'}`}></i>
-            </button>
+            <ThemeToggle className="navbar-theme-toggle desktop-only" />
 
             {isAuthenticated ? (
               <div className="navbar-auth-group">

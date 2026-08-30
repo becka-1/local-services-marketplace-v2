@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GoogleLogin } from '@react-oauth/google';
 import { useUser } from '../context/UserContext.jsx';
@@ -30,7 +31,7 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     if (formData.password !== formData.confirmPassword) {
       return setError('Passwords do not match');
     }
-    
+
     try {
       setLoading(true);
       setError('');
@@ -95,7 +96,7 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     }, 300);
   };
 
-  return (
+  return ReactDOM.createPortal(
     <AnimatePresence>
       <div className="auth-modal-backdrop" onClick={handleModalClose}>
         <motion.div
@@ -107,27 +108,13 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
           transition={{ duration: 0.2 }}
         >
           <button className="auth-modal-close" onClick={handleModalClose}>&times;</button>
-          
+
           {step === 1 ? (
             <>
               <h2>Create an Account</h2>
               <p className="auth-modal-subtitle">Join the marketplace to offer or request services.</p>
-              
+
               {error && <div className="auth-error">{error}</div>}
-
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={() => {
-                    setError('Google Signup failed.');
-                  }}
-                  useOneTap
-                />
-              </div>
-
-              <div style={{ textAlign: 'center', marginBottom: '20px', color: '#666', fontSize: '14px' }}>
-                — OR —
-              </div>
 
               <form onSubmit={handleRequestSubmit} className="auth-form">
                 <div className="form-group">
@@ -187,12 +174,26 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                     />
                   </div>
                 </div>
-                
+
+                <div style={{ textAlign: 'center', color: '#666', fontSize: '14px' }}>
+                  — OR —
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={() => {
+                      setError('Google Signup failed.');
+                    }}
+                    useOneTap
+                  />
+                </div>
+
                 <button type="submit" className="btn-primary auth-btn-submit" disabled={loading}>
                   {loading ? 'Sending Code...' : 'Continue'}
                 </button>
               </form>
-              
+
               <div className="auth-switch">
                 Already have an account?{' '}
                 <button type="button" className="btn-link" onClick={onSwitchToLogin}>
@@ -204,7 +205,7 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             <>
               <h2>Verify your Email</h2>
               <p className="auth-modal-subtitle">We sent a 6-digit code to <strong>{formData.email}</strong></p>
-              
+
               {error && <div className="auth-error">{error}</div>}
 
               <form onSubmit={handleConfirmSubmit} className="auth-form">
@@ -220,13 +221,13 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                     required
                   />
                 </div>
-                
+
                 <button type="submit" className="btn-primary auth-btn-submit" disabled={loading || code.length !== 6}>
                   {loading ? 'Verifying...' : 'Complete Sign Up'}
                 </button>
-                <button 
-                  type="button" 
-                  className="btn-secondary auth-btn-submit" 
+                <button
+                  type="button"
+                  className="btn-secondary auth-btn-submit"
                   style={{ marginTop: '10px' }}
                   onClick={() => { setStep(1); setError(''); }}
                   disabled={loading}
@@ -238,7 +239,8 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
           )}
         </motion.div>
       </div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 

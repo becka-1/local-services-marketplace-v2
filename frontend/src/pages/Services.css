@@ -26,12 +26,25 @@ h1 {
 
 .search-form input,
 .search-form select {
-  padding: 12px;
-
-  border: 1px solid var(--color-light-blue);
-  border-radius: 6px;
-
+  padding: 12px 16px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-surface-muted);
+  border-radius: 8px;
   font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.search-form input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
+.search-form input:focus,
+.search-form select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(39, 184, 216, 0.2);
 }
 
 .search-form input:first-child {
@@ -39,11 +52,31 @@ h1 {
   min-width: 220px;
 }
 
-.search-form button {
-  padding: 12px 20px;
-
-  border: none;
-  border-radius: 6px;
-
+.search-form select {
   cursor: pointer;
+}
+
+.search-form select option {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.search-form button {
+  padding: 12px 24px;
+  background: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.search-form button:hover {
+  opacity: 0.9;
+}
+
+.search-form button:active {
+  transform: scale(0.98);
 }

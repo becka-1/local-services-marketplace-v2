@@ -1,29 +1,82 @@
+/* ============================
+   PAGE LAYOUT
+   ============================ */
 .request-details-page {
   max-width: 800px;
   margin: 0 auto;
+  padding: 0 20px 60px;
 }
 
-.auth-simulation {
-  background-color: var(--color-surface-muted);
-  padding: 1rem;
-  border-radius: 8px;
-  margin: 1.5rem 0;
-  border: 1px solid var(--color-accent-yellow);
-}
-
-.auth-hint {
-  margin-top: 0.5rem;
-  margin-bottom: 0;
+.request-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+  margin-top: 8px;
+  transition: color 0.2s;
 }
 
+.request-back-link:hover {
+  color: var(--color-primary);
+}
+
+/* ============================
+   MAIN DETAILS CARD
+   ============================ */
 .details-card {
   background: var(--color-surface);
   border: 1px solid var(--color-light-blue);
-  border-radius: 8px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border-radius: 20px;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.details-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+.details-card h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+}
+
+/* Status Pill */
+.details-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.details-status-pill.status-pending   { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+.details-status-pill.status-accepted  { background: color-mix(in srgb, var(--color-primary) 15%, transparent); color: var(--color-primary); }
+.details-status-pill.status-completed { background: rgba(16, 185, 129, 0.12); color: #10b981; }
+.details-status-pill.status-rejected  { background: color-mix(in srgb, var(--color-accent-orange) 15%, transparent); color: var(--color-accent-orange); }
+.details-status-pill.status-cancelled { background: color-mix(in srgb, var(--color-text-muted) 12%, transparent); color: var(--color-text-muted); }
+
+/* Service Link */
+.details-service-name {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  margin: 6px 0 20px;
 }
 
 .service-link-btn {
@@ -31,71 +84,219 @@
   border: none;
   color: var(--color-primary);
   font-size: inherit;
-  font-weight: inherit;
+  font-weight: 600;
   cursor: pointer;
   padding: 0;
   text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
 }
 
 .service-link-btn:hover {
   color: var(--color-dark);
 }
 
-.message-box {
-  background-color: var(--color-surface);
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin: 1.5rem 0;
-  border-left: 4px solid var(--color-primary);
+/* Meta Row (date, etc.) */
+.details-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--color-light-blue);
+  border-bottom: 1px solid var(--color-light-blue);
+  margin-bottom: 24px;
 }
 
+.details-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.details-meta-item i {
+  color: var(--color-primary);
+  opacity: 0.7;
+  font-size: 0.85rem;
+}
+
+/* Message Box */
+.message-box {
+  background: var(--color-surface-muted);
+  border-left: 4px solid var(--color-primary);
+  border-radius: 0 12px 12px 0;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.message-box h3 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin: 0 0 8px;
+}
+
+.message-box p {
+  margin: 0;
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+/* Participants */
 .participants {
-  display: flex;
-  gap: 2rem;
-  margin-top: 2rem;
-  border-top: 1px solid var(--color-light-blue);
-  padding-top: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 .participant-info {
-  flex: 1;
-  background-color: var(--color-surface-muted);
-  padding: 1rem;
-  border-radius: 8px;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-light-blue);
+  border-radius: 12px;
+  padding: 16px;
 }
 
 .participant-info h3 {
-  margin-top: 0;
-  border-bottom: 1px solid var(--color-light-blue);
-  padding-bottom: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin: 0 0 12px;
 }
 
+.participant-info p {
+  margin: 6px 0;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  display: flex;
+  gap: 6px;
+}
+
+.participant-info strong {
+  color: var(--color-text-muted);
+  min-width: 50px;
+}
+
+/* ============================
+   ACTIONS SECTION
+   ============================ */
 .actions-section {
-  background-color: var(--color-surface);
-  padding: 1.5rem;
-  border-radius: 8px;
+  background: var(--color-surface);
   border: 1px solid var(--color-light-blue);
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+
+.actions-section h3 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin: 0 0 16px;
 }
 
 .action-buttons {
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
+.action-buttons a,
+.action-buttons button {
+  text-decoration: none;
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--color-light-blue);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn-action:hover {
+  background: var(--color-light-blue);
+  border-color: var(--color-primary);
+  color: var(--color-dark);
+}
+
+.btn-action.danger {
+  border-color: var(--color-accent-orange);
+  color: var(--color-accent-orange);
+}
+
+.btn-action.danger:hover {
+  background: var(--color-accent-orange);
+  color: var(--color-surface);
+}
+
+/* Status Update Form */
 .status-update-form {
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
+  flex-wrap: wrap;
+  gap: 10px;
   align-items: center;
 }
 
-.status-update-form select {
-  padding: 0.5rem;
-  border-radius: 4px;
+.status-select {
+  padding: 9px 14px;
+  border-radius: 8px;
   border: 1px solid var(--color-light-blue);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
 }
 
+.status-select:focus {
+  border-color: var(--color-primary);
+}
+
+.btn-update-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-surface);
+  font-family: inherit;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-update-status:hover:not(:disabled) {
+  background: var(--color-dark);
+  transform: translateY(-1px);
+}
+
+.btn-update-status:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Legacy (keep for compat) */
 .danger-btn {
   background-color: var(--color-accent-orange);
   color: var(--color-surface);
@@ -105,6 +306,34 @@
   cursor: pointer;
 }
 
-.danger-btn:hover {
-  background-color: var(--color-dark);
+/* ============================
+   RESPONSIVE
+   ============================ */
+@media (max-width: 600px) {
+  .details-card {
+    padding: 20px 16px;
+  }
+
+  .participants {
+    grid-template-columns: 1fr;
+  }
+
+  .details-card-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .status-update-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .status-select,
+  .btn-update-status {
+    width: 100%;
+  }
 }

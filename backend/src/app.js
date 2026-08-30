@@ -24,7 +24,10 @@ const PORT = process.env.PORT || 5000;
 
 // CORS config — shared between Express and Socket.IO
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl) or any origin in development
+    callback(null, true);
+  },
   credentials: true
 };
 
