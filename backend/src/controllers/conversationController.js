@@ -1,12 +1,10 @@
 import db from '../db/db.js';
 
-// Helper: ensure user_one_id < user_two_id
 function orderedPair(a, b) {
   const x = Number(a), y = Number(b);
   return x < y ? [x, y] : [y, x];
 }
 
-// GET /api/conversations
 export const getConversations = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -17,15 +15,12 @@ export const getConversations = async (req, res) => {
         c.user_one_id,
         c.user_two_id,
         c.created_at,
-        -- Other user's info
         p.name AS other_user_name,
         p.user_id AS other_user_id,
         (SELECT COUNT(*) > 0 FROM profiles WHERE user_id = other_uid.id AND profile_picture IS NOT NULL) AS other_has_picture,
-        -- Last message
         lm.content AS last_message,
         lm.created_at AS last_message_time,
         lm.sender_id AS last_message_sender_id,
-        -- Unread count
         (
           SELECT COUNT(*)
           FROM messages m2
@@ -34,13 +29,10 @@ export const getConversations = async (req, res) => {
             AND m2.read_at IS NULL
         ) AS unread_count
       FROM conversations c
-      -- Determine the other user
       CROSS JOIN LATERAL (
         SELECT CASE WHEN c.user_one_id = $1 THEN c.user_two_id ELSE c.user_one_id END AS id
       ) AS other_uid
-      -- Join profile of the other user
       JOIN profiles p ON p.user_id = other_uid.id
-      -- Get the latest message
       LEFT JOIN LATERAL (
         SELECT content, created_at, sender_id
         FROM messages
@@ -70,7 +62,6 @@ export const getConversations = async (req, res) => {
   }
 };
 
-// GET /api/conversations/:id/messages?before=&limit=
 export const getMessages = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -110,7 +101,6 @@ export const getMessages = async (req, res) => {
 
     const result = await db.query(query, params);
 
-    // Return in chronological order (oldest first)
     const messages = result.rows.reverse().map(row => ({
       id: row.id,
       conversationId: row.conversation_id,
@@ -130,7 +120,6 @@ export const getMessages = async (req, res) => {
   }
 };
 
-// POST /api/conversations  { otherUserId }
 export const createConversation = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -167,8 +156,6 @@ export const createConversation = async (req, res) => {
   }
 };
 
-// POST /api/conversations/:id/messages  { content }
-// REST fallback for when socket is unavailable
 export const sendMessageRest = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -205,7 +192,6 @@ export const sendMessageRest = async (req, res) => {
       readAt: msg.read_at,
     };
 
-    // Also emit via socket if io is available
     const io = req.app.get('io');
     if (io) {
       const conv = convCheck.rows[0];

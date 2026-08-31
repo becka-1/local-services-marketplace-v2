@@ -39,7 +39,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard-layout">
-      {/* Mobile Header */}
       <div className="admin-mobile-header">
         <span className="admin-brand-mobile">Admin Console</span>
         <button
@@ -51,7 +50,6 @@ const AdminDashboard = () => {
         </button>
       </div>
 
-      {/* Sidebar Overlay (mobile) */}
       {isSidebarOpen && (
         <div className="admin-sidebar-overlay" onClick={() => setIsSidebarOpen(false)} />
       )}

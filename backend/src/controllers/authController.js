@@ -9,8 +9,6 @@ const googleClient = new OAuth2Client(process.env.VITE_GOOGLE_CLIENT_ID || '8797
 const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_jwt_key_for_dev';
 const JWT_EXPIRES_IN = '7d';
 
-// In-memory store for pending registrations
-// Structure: { [email]: { email, passwordHash, name, phone, code, expiresAt } }
 const pendingRegistrations = new Map();
 
 export const registerRequest = async (req, res) => {
@@ -21,27 +19,22 @@ export const registerRequest = async (req, res) => {
       return res.status(400).json({ message: 'All fields are required.' });
     }
 
-    // Basic email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ message: "Invalid email address format." });
     }
 
-    // Check if user already exists
     const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
     if (existingUser.rows.length > 0) {
       return res.status(409).json({ message: 'Email is already registered.' });
     }
 
-    // Hash the password
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    // Generate 6-digit OTP
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 15 * 60 * 1000; // 15 minutes
+    const expiresAt = Date.now() + 15 * 60 * 1000;
 
-    // Store in memory
     pendingRegistrations.set(email, {
       email,
       passwordHash,
@@ -51,7 +44,6 @@ export const registerRequest = async (req, res) => {
       expiresAt
     });
 
-    // Send email
     const emailSent = await sendVerificationEmail(email, code, 'email');
     
     if (!emailSent) {
@@ -96,7 +88,6 @@ export const registerConfirm = async (req, res) => {
       return res.status(409).json({ message: 'Email is already registered.' });
     }
 
-    // Start a transaction since we insert into users and profiles
     await db.query('BEGIN');
 
     const userResult = await db.query(
@@ -106,7 +97,6 @@ export const registerConfirm = async (req, res) => {
 
     const newUser = userResult.rows[0];
 
-    // Create the profile and set email_verified = true
     await db.query(
       'INSERT INTO profiles (user_id, name, phone, email, email_verified) VALUES ($1, $2, $3, $4, true)',
       [newUser.id, pendingUser.name, pendingUser.phone, pendingUser.email]
@@ -114,15 +104,12 @@ export const registerConfirm = async (req, res) => {
 
     await db.query('COMMIT');
 
-    // Clean up
     pendingRegistrations.delete(email);
 
-    // Create JWT
     const token = jwt.sign({ id: newUser.id, role: newUser.role }, JWT_SECRET, {
       expiresIn: JWT_EXPIRES_IN,
     });
 
-    // Set HTTP-Only cookie
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -154,7 +141,6 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: 'Email and password are required.' });
     }
 
-    // Find the user
     const userResult = await db.query(
       `SELECT u.*, p.name, p.profile_picture IS NOT NULL AS has_profile_picture
        FROM users u 
@@ -169,23 +155,20 @@ export const login = async (req, res) => {
 
     const user = userResult.rows[0];
 
-    // Verify password
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
-    // Create JWT
     const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
       expiresIn: JWT_EXPIRES_IN,
     });
 
-    // Set HTTP-Only cookie
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.json({
@@ -215,7 +198,6 @@ export const logout = (req, res) => {
 
 export const getMe = async (req, res) => {
   try {
-    // The verifyToken middleware already placed user info on req.user
     const userId = req.user.id;
 
     const userResult = await db.query(
@@ -245,7 +227,6 @@ export const googleLogin = async (req, res) => {
       return res.status(400).json({ message: 'No Google ID token provided.' });
     }
 
-    // Verify the token
     const ticket = await googleClient.verifyIdToken({
       idToken,
       audience: process.env.VITE_GOOGLE_CLIENT_ID || '879774593708-04efjl77oic8knafvqclk69rii55s0eq.apps.googleusercontent.com',
@@ -254,21 +235,18 @@ export const googleLogin = async (req, res) => {
     const payload = ticket.getPayload();
     const { sub: googleId, email, name, picture } = payload;
 
-    // Check if user exists by google_id or email
     let userResult = await db.query('SELECT * FROM users WHERE google_id = $1 OR email = $2 LIMIT 1', [googleId, email]);
     let user = userResult.rows[0];
 
     if (!user) {
-      // Create new user since they don't exist
       await db.query('BEGIN');
-      
+
       const insertUserResult = await db.query(
         'INSERT INTO users (email, google_id) VALUES ($1, $2) RETURNING id, email, role, created_at',
         [email, googleId]
       );
       user = insertUserResult.rows[0];
 
-      // Create the profile
       await db.query(
         'INSERT INTO profiles (user_id, name, email, email_verified, profile_picture) VALUES ($1, $2, $3, true, $4)',
         [user.id, name, email, picture || null]
@@ -276,23 +254,20 @@ export const googleLogin = async (req, res) => {
 
       await db.query('COMMIT');
     } else {
-      // If user exists but google_id is not set, link the account
       if (!user.google_id) {
         await db.query('UPDATE users SET google_id = $1 WHERE id = $2', [googleId, user.id]);
       }
     }
 
-    // Create JWT
     const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
       expiresIn: JWT_EXPIRES_IN,
     });
 
-    // Set HTTP-Only cookie
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({

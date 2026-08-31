@@ -12,15 +12,15 @@ import "./UserProfile.css";
 /* ─────────────── helpers ─────────────── */
 const getSocialIcon = (platform) => {
   switch (platform?.toLowerCase()) {
-    case 'github':    return <i className="fa-brands fa-github"></i>;
-    case 'linkedin':  return <i className="fa-brands fa-linkedin"></i>;
+    case 'github': return <i className="fa-brands fa-github"></i>;
+    case 'linkedin': return <i className="fa-brands fa-linkedin"></i>;
     case 'instagram': return <i className="fa-brands fa-instagram"></i>;
-    case 'facebook':  return <i className="fa-brands fa-facebook"></i>;
+    case 'facebook': return <i className="fa-brands fa-facebook"></i>;
     case 'x':
-    case 'twitter':   return <i className="fa-brands fa-x-twitter"></i>;
-    case 'youtube':   return <i className="fa-brands fa-youtube"></i>;
+    case 'twitter': return <i className="fa-brands fa-x-twitter"></i>;
+    case 'youtube': return <i className="fa-brands fa-youtube"></i>;
     case 'portfolio': return <i className="fa-solid fa-globe"></i>;
-    default:          return <i className="fa-solid fa-link"></i>;
+    default: return <i className="fa-solid fa-link"></i>;
   }
 };
 
@@ -30,20 +30,20 @@ const UserProfile = () => {
   const { currentUserId, currentUser } = useUser();
   const navigate = useNavigate();
 
-  const [profile, setProfile]             = useState(null);
-  const [services, setServices]           = useState([]);
-  const [loading, setLoading]             = useState(true);
-  const [error, setError]                 = useState("");
+  const [profile, setProfile] = useState(null);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [serviceSearch, setServiceSearch] = useState("");
 
   /* edit mode ─ all changes are buffered until Save */
-  const [isEditing, setIsEditing]                   = useState(false);
-  const [pendingChanges, setPendingChanges]          = useState({});
-  const [pendingPictureFile, setPendingPictureFile]  = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [pendingChanges, setPendingChanges] = useState({});
+  const [pendingPictureFile, setPendingPictureFile] = useState(null);
   const [pendingPicturePreview, setPendingPicturePreview] = useState(null);
-  const [pendingPictureRemove, setPendingPictureRemove]   = useState(false);
-  const [isSaving, setIsSaving]                     = useState(false);
-  const [saveError, setSaveError]                   = useState("");
+  const [pendingPictureRemove, setPendingPictureRemove] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   /* email visibility toggle (stored only locally until saved) */
   const [emailVisible, setEmailVisible] = useState(false);
@@ -51,11 +51,11 @@ const UserProfile = () => {
   /* social links */
   const [showSocialForm, setShowSocialForm] = useState(false);
   const [socialPlatform, setSocialPlatform] = useState("");
-  const [socialUrl, setSocialUrl]           = useState("");
+  const [socialUrl, setSocialUrl] = useState("");
 
   const isOwnProfile = Number(id) === Number(currentUserId);
-  const isAdmin      = currentUser?.role === 'admin';
-  const canEdit      = isOwnProfile || isAdmin;
+  const isAdmin = currentUser?.role === 'admin';
+  const canEdit = isOwnProfile || isAdmin;
 
   /* ─── load ─── */
   useEffect(() => {
@@ -95,7 +95,7 @@ const UserProfile = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) { alert("Please select an image file."); return; }
-    if (file.size > 5 * 1024 * 1024)    { alert("Profile picture must be smaller than 5 MB."); return; }
+    if (file.size > 5 * 1024 * 1024) { alert("Profile picture must be smaller than 5 MB."); return; }
     setPendingPictureFile(file);
     setPendingPicturePreview(URL.createObjectURL(file));
     setPendingPictureRemove(false);
@@ -131,7 +131,7 @@ const UserProfile = () => {
 
       const formData = new FormData();
       // always include required fields
-      formData.append('name',  pendingChanges.name  ?? profile.name  ?? '');
+      formData.append('name', pendingChanges.name ?? profile.name ?? '');
       formData.append('phone', pendingChanges.phone ?? profile.phone ?? '');
       // optional fields
       ['bio', 'location', 'website'].forEach(f => {
@@ -205,7 +205,7 @@ const UserProfile = () => {
     if (!serviceSearch.trim()) return true;
     const q = serviceSearch.toLowerCase();
     return s.title?.toLowerCase().includes(q) || s.description?.toLowerCase().includes(q) ||
-           s.category_name?.toLowerCase().includes(q) || s.location?.toLowerCase().includes(q);
+      s.category_name?.toLowerCase().includes(q) || s.location?.toLowerCase().includes(q);
   });
 
   const formatDate = (d) => d
@@ -250,11 +250,6 @@ const UserProfile = () => {
           <Link to="/services" className="profile-breadcrumb-link">
             <i className="fa-solid fa-arrow-left"></i> Back to Services
           </Link>
-          <div className="profile-banner-tags">
-            {isOwnProfile && <span className="profile-tag tag-own"><i className="fa-solid fa-star"></i> Your Account</span>}
-            {!isOwnProfile && isAdmin && <span className="profile-tag tag-admin"><i className="fa-solid fa-shield-halved"></i> Viewing as Admin</span>}
-            {profile.role === 'admin' && <span className="profile-tag tag-role-admin"><i className="fa-solid fa-bolt"></i> Admin</span>}
-          </div>
         </div>
       </div>
 
@@ -393,7 +388,7 @@ const UserProfile = () => {
             <form onSubmit={handleAddSocialLink} className="inline-social-form">
               <select value={socialPlatform} onChange={e => { setSocialPlatform(e.target.value); const ex = profile?.social_links?.find(s => s.platform?.toLowerCase() === e.target.value); if (ex) setSocialUrl(ex.url); }} required>
                 <option value="">Select Platform…</option>
-                {['github','linkedin','instagram','facebook','x','youtube','portfolio'].map(p => (
+                {['github', 'linkedin', 'instagram', 'facebook', 'x', 'youtube', 'portfolio'].map(p => (
                   <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>
                 ))}
               </select>

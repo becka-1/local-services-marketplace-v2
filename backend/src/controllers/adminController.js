@@ -44,7 +44,6 @@ export const getUserDetails = async (req, res) => {
 
     const profileRes = await db.query(`SELECT * FROM profiles WHERE user_id = $1`, [id]);
     const servicesRes = await db.query(`SELECT id, title, price, status, created_at FROM services WHERE user_id = $1`, [id]);
-    
     res.json({
       user: userRes.rows[0],
       profile: profileRes.rows[0] || null,
@@ -118,7 +117,6 @@ export const getAllRequestsAdmin = async (req, res) => {
   }
 };
 
-// CATEGORY MANAGEMENT
 export const createCategory = async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -159,7 +157,6 @@ export const deleteCategory = async (req, res) => {
   }
 };
 
-// REPORTS MANAGEMENT
 export const getAllReports = async (req, res) => {
   try {
     const result = await db.query(

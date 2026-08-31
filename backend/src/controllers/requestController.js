@@ -148,7 +148,6 @@ export const getRequestById = async (req, res) => {
 
     const requestData = result.rows[0];
 
-    // Check permissions: must be requester, provider, or admin
     if (
       requestData.requester_id !== req.user.id &&
       requestData.provider_id !== req.user.id &&

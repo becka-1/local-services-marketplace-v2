@@ -1,8 +1,6 @@
 import db from '../db/db.js';
 import { sendVerificationEmail } from '../services/emailService.js';
 
-// In-memory store for OTPs
-// Structure: { [userId_type]: { code: '123456', expiresAt: 1234567890 } }
 const otpStore = new Map();
 
 export const getProfile = async (req, res) => {
@@ -48,10 +46,8 @@ export const getProfile = async (req, res) => {
       });
     }
 
-    // Get the profile from the query result
     const profile = result.rows[0];
 
-    // Get social links
     const socialResult = await db.query(
       `
       SELECT
@@ -65,8 +61,7 @@ export const getProfile = async (req, res) => {
       [id]
     );
 
-    profile.social_links =
-      socialResult.rows;
+    profile.social_links = socialResult.rows;
 
     res.json(profile);
 
@@ -165,11 +160,9 @@ export const updateProfile = async (req, res) => {
 
     await client.query("BEGIN");
 
-    // Fetch existing to check if email/phone changed
     const existingResult = await client.query('SELECT email, phone FROM profiles WHERE user_id = $1', [id]);
     const existing = existingResult.rows[0];
 
-    // If they changed, we should reset their verification status
     const resetEmailVerified = existing && existing.email !== (email?.trim() || null);
     const resetPhoneVerified = existing && existing.phone !== phone.trim();
 
@@ -221,7 +214,6 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    // Replace profile picture if a new one was uploaded.
     if (req.file) {
       await client.query(
         `
@@ -325,7 +317,6 @@ export const addSocialLink = async (
     const trimmedPlatform = platform.trim();
     const trimmedUrl = url.trim();
 
-    // Check if link for this platform already exists for this user
     const existing = await db.query(
       `
       SELECT id FROM profile_social_links
@@ -431,12 +422,10 @@ export const deleteSocialLink = async (
   }
 };
 
-// --- Verification Logic ---
-
 export const requestVerification = async (req, res) => {
   try {
     const { id } = req.params;
-    const { type } = req.body; // 'email'
+    const { type } = req.body;
 
     if (Number(id) !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ message: "Forbidden." });
@@ -446,7 +435,6 @@ export const requestVerification = async (req, res) => {
       return res.status(400).json({ message: "Invalid verification type. Only email is supported." });
     }
 
-    // Get user's email to send the code to
     const profileResult = await db.query('SELECT email FROM profiles WHERE user_id = $1', [id]);
     if (profileResult.rows.length === 0) {
       return res.status(404).json({ message: "Profile not found." });
@@ -457,23 +445,17 @@ export const requestVerification = async (req, res) => {
       return res.status(400).json({ message: "No email address on profile to send verification code." });
     }
 
-    // Basic email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(targetEmail)) {
       return res.status(400).json({ message: "The email address on your profile is invalid. Please update it first." });
     }
 
-    console.log("targetEmail is:", targetEmail, "Type:", typeof targetEmail);
-
-    // Generate 6-digit OTP
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+    const expiresAt = Date.now() + 10 * 60 * 1000;
 
-    // Store OTP in memory
     const storeKey = `${id}_${type}`;
     otpStore.set(storeKey, { code, expiresAt });
 
-    // Send email
     const emailSent = await sendVerificationEmail(targetEmail, code, type);
     
     if (!emailSent) {
@@ -512,7 +494,6 @@ export const verifyCode = async (req, res) => {
       return res.status(400).json({ message: "Invalid verification code." });
     }
 
-    // Code is valid, update the database
     const columnToUpdate = type === 'email' ? 'email_verified' : 'phone_verified';
     
     await db.query(
@@ -520,7 +501,6 @@ export const verifyCode = async (req, res) => {
       [id]
     );
 
-    // Clear the OTP
     otpStore.delete(storeKey);
 
     res.json({ message: `${type} verified successfully.` });

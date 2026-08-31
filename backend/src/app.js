@@ -22,10 +22,8 @@ const app = express();
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 5000;
 
-// CORS config — shared between Express and Socket.IO
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl) or any origin in development
     callback(null, true);
   },
   credentials: true
@@ -35,24 +33,21 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
-// Socket.IO
 const io = new Server(httpServer, {
   cors: corsOptions,
 });
-app.set('io', io); // Make io available to REST controllers
+app.set('io', io);
 initializeSocket(io);
 
 app.get("/api/health", async (req, res) => {
   try {
     const result = await db.query("SELECT NOW()");
-
     res.json({
       message: "API and database are working",
       databaseTime: result.rows[0].now
     });
   } catch (error) {
     console.error(error);
-
     res.status(500).json({
       message: "Database connection failed"
     });
@@ -68,7 +63,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/conversations", conversationRoutes);
 
-// Initialize email service
 initEmailService();
 
 httpServer.listen(PORT, () => {

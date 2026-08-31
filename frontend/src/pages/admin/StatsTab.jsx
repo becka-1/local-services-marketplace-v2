@@ -82,7 +82,6 @@ const StatsTab = ({ onNavigate }) => {
 
   if (!stats) return null;
 
-  // Derived metrics
   const totalReq = stats.totalRequests || 0;
   const compReq = stats.completedRequests || 0;
   const pendReq = stats.pendingRequests || 0;

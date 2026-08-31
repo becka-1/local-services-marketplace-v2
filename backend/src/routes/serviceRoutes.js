@@ -16,11 +16,6 @@ import {
 
 const router = express.Router();
 
-
-// =========================
-// Services
-// =========================
-
 router.get("/", getAllServices);
 
 router.get("/featured", getFeaturedServices);
@@ -47,11 +42,6 @@ router.delete(
   deleteService
 );
 
-
-// =========================
-// Service Images
-// =========================
-
 router.get(
   "/:id/images",
   getServiceImages
@@ -67,6 +57,5 @@ router.delete(
   verifyToken,
   deleteServiceImage
 );
-
 
 export default router;
