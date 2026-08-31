@@ -78,8 +78,8 @@ local-services-marketplace/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/becka-1/local-services-marketplace.git
-cd local-services-marketplace
+git clone https://github.com/becka-1/local-services-marketplace-v2.git
+cd local-services-marketplace-v2
 ```
 
 ### 2. Set up the database
