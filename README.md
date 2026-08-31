@@ -78,7 +78,7 @@ local-services-marketplace/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/local-services-marketplace.git
+git clone https://github.com/becka-1/local-services-marketplace.git
 cd local-services-marketplace
 ```
 
