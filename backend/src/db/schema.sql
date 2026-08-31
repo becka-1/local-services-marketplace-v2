@@ -138,6 +138,7 @@ CREATE TABLE public.service_images (
     service_id integer NOT NULL,
     image_data bytea NOT NULL,
     mime_type character varying(50) NOT NULL,
+    default_filename character varying(255),
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 

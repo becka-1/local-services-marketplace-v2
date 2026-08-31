@@ -97,6 +97,10 @@ cd backend
 npm install
 cp .env.example .env
 # Edit .env with your database credentials and other settings
+
+# Optional: Seed the database with demo data
+npm run seed
+
 npm run dev
 ```
 
