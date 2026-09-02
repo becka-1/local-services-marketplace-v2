@@ -26,7 +26,7 @@ export const registerRequest = async (req, res) => {
 
     const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
     if (existingUser.rows.length > 0) {
-      return res.status(409).json({ message: 'Email is already registered.' });
+      return res.status(200).json({ message: 'Verification code sent to your email.' });
     }
 
     const saltRounds = 10;
