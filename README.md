@@ -124,7 +124,7 @@ See `backend/.env.example` for all required backend variables. The frontend read
 
 ---
 
-## Roadmap
+## Next steps
 
 - Payment gateway integration
 - Customer reviews and ratings
