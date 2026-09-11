@@ -14,6 +14,8 @@ import Messages from './pages/Messages.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import AdminRoute from './components/AdminRoute.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
+import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
+import TermsOfService from './pages/TermsOfService.jsx';
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
               <Route path="/requests/:id/edit" element={<ProtectedRoute><EditRequest /></ProtectedRoute>} />
               <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
               <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
             </Routes>
           </div>
           <Footer />

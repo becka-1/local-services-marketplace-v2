@@ -64,9 +64,9 @@ const Footer = () => {
             &copy; {new Date().getFullYear()} LocalServices. All rights reserved.
           </div>
           <div className="footer-legal">
-            <Link to="#" className="legal-link">Privacy Policy</Link>
+            <Link to="/privacy" className="legal-link">Privacy Policy</Link>
             <span className="legal-separator">•</span>
-            <Link to="#" className="legal-link">Terms & Conditions</Link>
+            <Link to="/terms" className="legal-link">Terms & Conditions</Link>
           </div>
         </div>
       </div>
