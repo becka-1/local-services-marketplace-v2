@@ -1,37 +1,17 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-let transporter = null;
+// Initialize the Resend client with an API key from the environment
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Initialize the test account and transporter asynchronously
 export const initEmailService = async () => {
-  try {
-    // Generate test SMTP service account from ethereal.email
-    let testAccount = await nodemailer.createTestAccount();
-    
-    // Create reusable transporter object using the default SMTP transport
-    transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass,
-      },
-    });
-    
-    console.log("Ethereal Email Service initialized.");
-    console.log("Ethereal User: %s", testAccount.user);
-  } catch (error) {
-    console.error("Failed to initialize Ethereal Email Service:", error);
+  if (!process.env.RESEND_API_KEY) {
+    console.warn("Warning: RESEND_API_KEY is not set in the environment variables. Emails will fail to send.");
+  } else {
+    console.log("Resend Email Service initialized.");
   }
 };
 
 export const sendVerificationEmail = async (toEmail, code, type) => {
-  if (!transporter) {
-    console.error("Email transporter is not initialized yet.");
-    return false;
-  }
-  
   const subject = type === 'phone' 
     ? "Your Phone Verification Code" 
     : "Your Email Verification Code";
@@ -48,18 +28,20 @@ export const sendVerificationEmail = async (toEmail, code, type) => {
     </div>`;
 
   try {
-    // send mail with defined transport object
-    let info = await transporter.sendMail({
-      from: '"Local Services Marketplace" <noreply@localservices.com>',
-      to: toEmail,
+    const { data, error } = await resend.emails.send({
+      from: 'LocalServices <onboarding@resend.dev>', // Resend's testing domain. Update with your verified domain for production.
+      to: [toEmail],
       subject: subject,
       text: text,
       html: html,
     });
 
-    console.log("Message sent: %s", info.messageId);
-    // Preview only available when sending through an Ethereal account
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    if (error) {
+      console.error("Resend API Error:", error);
+      return false;
+    }
+
+    console.log("Message sent via Resend:", data?.id);
     return true;
   } catch (error) {
     console.error("Error sending email:", error);
