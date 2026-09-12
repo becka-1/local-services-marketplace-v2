@@ -3,7 +3,11 @@ import jwt from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_jwt_key_for_dev';
 
 export const verifyToken = (req, res, next) => {
-  const token = req.cookies?.token;
+  let token = req.cookies?.token;
+
+  if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
 
   if (!token) {
     return res.status(401).json({ message: 'Authentication required. No token provided.' });

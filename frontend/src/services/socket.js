@@ -8,9 +8,11 @@ const rawBase = (import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL
 const SOCKET_URL = rawBase || `http://${window.location.hostname}:5000`;
 
 export function getSocket() {
+  const token = localStorage.getItem('token');
   if (!socket) {
     socket = io(SOCKET_URL, {
       withCredentials: true,
+      auth: { token },
       autoConnect: false,
     });
   }

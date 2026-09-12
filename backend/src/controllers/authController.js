@@ -122,6 +122,7 @@ export const registerConfirm = async (req, res) => {
 
     res.status(201).json({
       message: 'Registration successful',
+      token,
       user: {
         id: newUser.id,
         email: newUser.email,
@@ -171,6 +172,7 @@ export const login = async (req, res) => {
 
     res.json({
       message: 'Login successful',
+      token,
       user: {
         id: user.id,
         email: user.email,
@@ -262,6 +264,7 @@ export const googleLogin = async (req, res) => {
 
     res.status(200).json({
       message: 'Google Login successful',
+      token,
       user: {
         id: user.id,
         email: user.email,

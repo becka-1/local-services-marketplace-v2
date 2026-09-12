@@ -7,20 +7,30 @@ export const registerRequest = async (userData) => {
 
 export const registerConfirm = async (email, code) => {
   const response = await api.post("/auth/register/confirm", { email, code });
+  if (response.data?.token) {
+    localStorage.setItem('token', response.data.token);
+  }
   return response.data;
 };
 
 export const login = async (credentials) => {
   const response = await api.post("/auth/login", credentials);
+  if (response.data?.token) {
+    localStorage.setItem('token', response.data.token);
+  }
   return response.data;
 };
 
 export const googleLogin = async (idToken) => {
   const response = await api.post("/auth/google", { token: idToken });
+  if (response.data?.token) {
+    localStorage.setItem('token', response.data.token);
+  }
   return response.data;
 };
 
 export const logout = async () => {
+  localStorage.removeItem('token');
   const response = await api.post("/auth/logout");
   return response.data;
 };

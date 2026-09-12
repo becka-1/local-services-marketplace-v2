@@ -22,7 +22,7 @@ export function initializeSocket(io) {
   io.use((socket, next) => {
     try {
       const cookies = parseCookies(socket.handshake.headers.cookie || '');
-      const token = cookies.token;
+      const token = cookies.token || socket.handshake.auth?.token;
       if (!token) {
         return next(new Error('Authentication required'));
       }
