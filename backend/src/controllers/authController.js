@@ -4,7 +4,8 @@ import db from '../db/db.js';
 import { sendVerificationEmail } from '../services/emailService.js';
 import { OAuth2Client } from 'google-auth-library';
 
-const googleClient = new OAuth2Client(process.env.VITE_GOOGLE_CLIENT_ID || '879774593708-04efjl77oic8knafvqclk69rii55s0eq.apps.googleusercontent.com');
+const googleClientId = process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID || '879774593708-5d0mukk04010hljgc1vmkongrfgjsdjc.apps.googleusercontent.com';
+const googleClient = new OAuth2Client(googleClientId);
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_jwt_key_for_dev';
 const JWT_EXPIRES_IN = '7d';
@@ -229,7 +230,7 @@ export const googleLogin = async (req, res) => {
 
     const ticket = await googleClient.verifyIdToken({
       idToken,
-      audience: process.env.VITE_GOOGLE_CLIENT_ID || '879774593708-04efjl77oic8knafvqclk69rii55s0eq.apps.googleusercontent.com',
+      audience: googleClientId,
     });
 
     const payload = ticket.getPayload();
