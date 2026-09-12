@@ -61,12 +61,12 @@ async function seed() {
     console.log("🛠️ Inserting realistic services...");
     const servicesRes = await db.query(`
       INSERT INTO services (user_id, category_id, title, description, price, location) VALUES 
-      ($1, $2, 'Emergency Plumbing & Drain Cleaning', 'Fast and reliable 24/7 plumbing services. I can fix leaks, unclog drains, and repair water heaters.', 75.00, 'City-wide'),
-      ($1, $3, 'Home Electrical Safety Inspection & Wiring', 'Certified electrician offering full home safety inspections, outlet installation, and rewiring.', 90.00, 'Metro Area'),
-      ($2, $4, 'Deep House & Move-Out Cleaning', 'Top-to-bottom cleaning service perfect for move-ins or move-outs. Includes appliances and windows.', 120.00, 'Uptown & Suburbs'),
-      ($2, $5, 'High School Math & Physics Tutoring', 'Experienced tutor offering 1-on-1 sessions for algebra, calculus, and physics. Online or in-person.', 40.00, 'University District')
+      ($1, $3, 'Emergency Plumbing & Drain Cleaning', 'Fast and reliable 24/7 plumbing services. I can fix leaks, unclog drains, and repair water heaters.', 75.00, 'City-wide'),
+      ($1, $4, 'Home Electrical Safety Inspection & Wiring', 'Certified electrician offering full home safety inspections, outlet installation, and rewiring.', 90.00, 'Metro Area'),
+      ($2, $5, 'Deep House & Move-Out Cleaning', 'Top-to-bottom cleaning service perfect for move-ins or move-outs. Includes appliances and windows.', 120.00, 'Uptown & Suburbs'),
+      ($2, $6, 'High School Math & Physics Tutoring', 'Experienced tutor offering 1-on-1 sessions for algebra, calculus, and physics. Online or in-person.', 40.00, 'University District')
       RETURNING id, title;
-    `, [p1, categories['Plumbing'], categories['Electrical'], categories['Cleaning'], categories['Tutoring']]);
+    `, [p1, p2, categories['Plumbing'], categories['Electrical'], categories['Cleaning'], categories['Tutoring']]);
 
     // 5. Attach Default Images
     console.log("🖼️ Attaching default images...");

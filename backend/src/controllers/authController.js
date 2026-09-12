@@ -10,6 +10,13 @@ const googleClient = new OAuth2Client(googleClientId);
 const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_jwt_key_for_dev';
 const JWT_EXPIRES_IN = '7d';
 
+const getCookieOptions = () => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+});
+
 const pendingRegistrations = new Map();
 
 export const registerRequest = async (req, res) => {
@@ -111,12 +118,7 @@ export const registerConfirm = async (req, res) => {
       expiresIn: JWT_EXPIRES_IN,
     });
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+    res.cookie('token', token, getCookieOptions());
 
     res.status(201).json({
       message: 'Registration successful',
@@ -165,12 +167,7 @@ export const login = async (req, res) => {
       expiresIn: JWT_EXPIRES_IN,
     });
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie('token', token, getCookieOptions());
 
     res.json({
       message: 'Login successful',
@@ -189,11 +186,8 @@ export const login = async (req, res) => {
 };
 
 export const logout = (req, res) => {
-  res.clearCookie('token', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-  });
+  const { maxAge, ...clearOptions } = getCookieOptions();
+  res.clearCookie('token', clearOptions);
   res.json({ message: 'Logged out successfully' });
 };
 
@@ -264,12 +258,7 @@ export const googleLogin = async (req, res) => {
       expiresIn: JWT_EXPIRES_IN,
     });
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie('token', token, getCookieOptions());
 
     res.status(200).json({
       message: 'Google Login successful',
