@@ -1,23 +1,31 @@
+import 'dotenv/config';
 import nodemailer from 'nodemailer';
 import { Resend } from 'resend';
+
+const getBrevoKey = () => process.env.BREVO_API_KEY;
+const getSenderEmail = () => process.env.EMAIL_USER || 'bereketmelaku887@gmail.com';
+const getEmailPass = () => process.env.EMAIL_APP_PASS ? process.env.EMAIL_APP_PASS.replace(/\s+/g, '') : '';
 
 let transporter = null;
 let resendClient = null;
 
-const emailUser = process.env.EMAIL_USER || 'bereketmelaku887@gmail.com';
-const emailPass = (process.env.EMAIL_APP_PASS || 'wejjrjqvqivoprkj').replace(/\s+/g, '');
-
 export const initEmailService = async () => {
-  if (emailUser && emailPass) {
+  const brevoKey = getBrevoKey();
+  const sender = getSenderEmail();
+  const pass = getEmailPass();
+
+  if (brevoKey) {
+    console.log(`✅ Brevo HTTPS Email Service initialized for ${sender}`);
+  } else if (sender && pass) {
     try {
       transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: emailUser,
-          pass: emailPass,
+          user: sender,
+          pass: pass,
         },
       });
-      console.log(`✅ Gmail SMTP Email Service initialized for ${emailUser}`);
+      console.log(`✅ Gmail SMTP Email Service initialized for ${sender}`);
     } catch (err) {
       console.error("Failed to initialize Gmail SMTP:", err);
     }
@@ -30,6 +38,9 @@ export const initEmailService = async () => {
 };
 
 export const sendVerificationEmail = async (toEmail, code, type) => {
+  const brevoKey = getBrevoKey();
+  const sender = getSenderEmail();
+
   const subject = type === 'phone' 
     ? "Your Phone Verification Code" 
     : "Your Email Verification Code";
@@ -45,11 +56,47 @@ export const sendVerificationEmail = async (toEmail, code, type) => {
       <p style="font-size: 14px; color: #6c757d;">This code will expire in 10 minutes.</p>
     </div>`;
 
-  // 1. Prefer Gmail SMTP if transporter is initialized
+  // 1. Primary: Brevo HTTPS REST API (Port 443 - never blocked by cloud hosts like Render)
+  if (brevoKey) {
+    try {
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'api-key': brevoKey,
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          sender: {
+            name: "LocalServices Marketplace",
+            email: sender
+          },
+          to: [
+            { email: toEmail }
+          ],
+          subject: subject,
+          htmlContent: html,
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log(`📧 Verification email sent via Brevo HTTPS API to: ${toEmail} (ID: ${data.messageId})`);
+        return true;
+      } else {
+        console.error("Brevo API Error:", data);
+      }
+    } catch (error) {
+      console.error("Brevo Fetch Error:", error);
+    }
+  }
+
+  // 2. Secondary: Gmail SMTP
   if (transporter) {
     try {
       const info = await transporter.sendMail({
-        from: `"LocalServices Marketplace" <${emailUser}>`,
+        from: `"LocalServices Marketplace" <${senderEmail}>`,
         to: toEmail,
         subject: subject,
         text: text,
@@ -59,11 +106,10 @@ export const sendVerificationEmail = async (toEmail, code, type) => {
       return true;
     } catch (error) {
       console.error("Gmail SMTP Send Error:", error);
-      // Fall through to Resend if available
     }
   }
 
-  // 2. Fallback to Resend
+  // 3. Fallback: Resend
   if (resendClient || process.env.RESEND_API_KEY) {
     const client = resendClient || new Resend(process.env.RESEND_API_KEY);
     try {
@@ -75,19 +121,16 @@ export const sendVerificationEmail = async (toEmail, code, type) => {
         html: html,
       });
 
-      if (error) {
-        console.error("Resend API Error:", error);
-        return false;
+      if (!error) {
+        console.log("Message sent via Resend:", data?.id);
+        return true;
       }
-
-      console.log("Message sent via Resend:", data?.id);
-      return true;
+      console.error("Resend API Error:", error);
     } catch (error) {
       console.error("Error sending email via Resend:", error);
-      return false;
     }
   }
 
-  console.error("No email service available to send email.");
+  console.error("No email service succeeded in sending email.");
   return false;
 };
