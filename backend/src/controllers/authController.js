@@ -237,19 +237,23 @@ export const googleLogin = async (req, res) => {
 
     if (!user) {
       await db.query('BEGIN');
+      try {
+        const insertUserResult = await db.query(
+          'INSERT INTO users (email, google_id) VALUES ($1, $2) RETURNING id, email, role, created_at',
+          [email, googleId]
+        );
+        user = insertUserResult.rows[0];
 
-      const insertUserResult = await db.query(
-        'INSERT INTO users (email, google_id) VALUES ($1, $2) RETURNING id, email, role, created_at',
-        [email, googleId]
-      );
-      user = insertUserResult.rows[0];
+        await db.query(
+          'INSERT INTO profiles (user_id, name, phone, email, email_verified, profile_picture) VALUES ($1, $2, $3, $4, true, $5)',
+          [user.id, name, '', email, picture || null]
+        );
 
-      await db.query(
-        'INSERT INTO profiles (user_id, name, email, email_verified, profile_picture) VALUES ($1, $2, $3, true, $4)',
-        [user.id, name, email, picture || null]
-      );
-
-      await db.query('COMMIT');
+        await db.query('COMMIT');
+      } catch (insertErr) {
+        await db.query('ROLLBACK');
+        throw insertErr;
+      }
     } else {
       if (!user.google_id) {
         await db.query('UPDATE users SET google_id = $1 WHERE id = $2', [googleId, user.id]);
