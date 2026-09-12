@@ -17,8 +17,12 @@ export const UserProvider = ({ children }) => {
       setCurrentUser(data.user);
       
       // Also fetch full profile data for their provider profile view
-      const profileData = await getProfile(data.user.id);
-      setCurrentUserProfile(profileData);
+      try {
+        const profileData = await getProfile(data.user.id);
+        setCurrentUserProfile(profileData);
+      } catch (profileErr) {
+        console.warn("Could not load full profile data:", profileErr);
+      }
     } catch (err) {
       console.warn("Could not load authenticated user.");
       setCurrentUser(null);
